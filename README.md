@@ -36,7 +36,8 @@ Flare is designed for LuaTeX. Other TeX engines are not supported.
 
 
 ## Installation
-Unpack the TDS-ZIP file in the TDS tree.
+Unpack [flare.tds.zip](release/flare.tds.zip) (a TDS-packaged ZIP-file) in the
+TDS tree (aka TEXMF tree).
 
 
 ## Feedback

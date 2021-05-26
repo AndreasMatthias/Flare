@@ -50,7 +50,7 @@ DIST-LUA-FILES= \
 	flare-types.lua
 
 DIST-DOC-FILES= \
-	Readme.md
+	README.md
 
 DIST-EXP-FILES=\
 	./examples/dummy-1.pdf \
@@ -74,5 +74,8 @@ tds:
 	cd $(DIST-DIR); zip -r $(TDS-ZIP) *
 	cp $(DIST-DIR)/$(TDS-ZIP) .
 	rm -r $(DIST-DIR)
+
+	mkdir -p release/
+	mv $(TDS-ZIP) release/
 
 release: tds
