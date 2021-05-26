@@ -4,10 +4,11 @@ title = 'Flare – Reference Documentation' -- html title
 description = 'Flare – A plugin for `\\includegraphics`'
 full_description=[[
 
-While `\includegraphics` copies the content stream of a PDF page,
-_Flare_ copies the annotations belonging to this PDF page.
+Flare is a LaTeX package and an extension to `\includegraphics`. While
+`\includegraphics` copies the content stream of a PDF page, Flare copies all
+annotations belonging to this PDF page.
 
-[Github Project Page](https://github.com/AndreasMatthias)
+[Github Project Page](https://github.com/AndreasMatthias/Flare)
 ]]
 
 file = {

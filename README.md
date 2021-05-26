@@ -28,7 +28,7 @@ Flare specific options shall be given in the optional argument of
 
     \includegraphics[<flare options>]{file.pdf}
 
-See section XXX for more advanced examples.
+See [examples/](examples) for more advanced examples.
 
 
 ## Requirements
