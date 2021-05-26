@@ -1,0 +1,11 @@
+flare.sty
+flare*.lua
+test-flare*.pdf
+
+tmp_*
+
+*.run
+*.log
+*.aux
+*.out
+

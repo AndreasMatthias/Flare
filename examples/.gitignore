@@ -1,0 +1,10 @@
+flare.sty
+flare*.lua
+
+example-?.pdf
+
+*.log
+*.aux
+*.flr
+*.thm
+*.out

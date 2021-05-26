@@ -1,0 +1,110 @@
+%PDF-1.5
+%µ¶
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Resources 4 0 R
+  /MediaBox [ 0 0 595.276 841.89 ]
+  /Parent 2 0 R
+  /Annots 5 0 R
+>>
+endobj
+
+4 0 obj
+<<
+>>
+endobj
+
+5 0 obj
+[ 6 0 R 7 0 R ]
+endobj
+
+6 0 obj
+<<
+  /Type /Annot
+  /Subtype /Text
+  /Rect [ 179.03272 594.54837 379.0327 694.54837 ]
+  /P 3 0 R
+  /Contents <FEFF0074006500730074>
+  /NM (annot-1)
+  /M (D:20210427131639+02'00)
+  /F 28
+  /Border [ 0 0 3 ]
+  /C [ 0 .9019608 .9019608 ]
+  /T <FEFF007400690074006C0065>
+  /CA .7
+  /RC (<body><p>foo<b>bar</b></p></body>)
+  /CreationDate (D:20210401000000)
+  /IC [ .9 .9 .1 ]
+  /IRT 7 0 R
+  /Subj (subject)
+  /RT /R
+  /IT /Whatever
+  /ExData 9 0 R
+>>
+endobj
+
+7 0 obj
+<<
+  /Type /Annot
+  /Rect [ 73.58207 669.774 153.39369 717.281 ]
+  /Subtype /Square
+  /M (D:20210427131733+02'00)
+  /T <FEFF0061006E00640072006500610073>
+  /Contents (foo)
+  /NM (annot-2)
+  /F 4
+  /C [ .96 .47 0 ]
+  /CA .7
+  /Border [ 0 0 5 ]
+  /P 3 0 R
+>>
+endobj
+
+9 0 obj
+<<
+  /Type /ExData
+  /Subtype /Foo
+  /AAA 123
+  /BBB (test)
+>>
+endobj
+
+xref
+0 10
+0000000008 65536 f 
+0000000016 00000 n 
+0000000070 00000 n 
+0000000136 00000 n 
+0000000258 00000 n 
+0000000280 00000 n 
+0000000312 00000 n 
+0000000775 00000 n 
+0000000000 00002 f 
+0000001048 00000 n 
+
+trailer
+<<
+  /Size 10
+  /Root 1 0 R
+  /ID [ <89221C61C75CE80AAA4A6AAD51471F56> <A6CF37831169DE49831284FEDC226ED0> ]
+>>
+startxref
+1127
+%%EOF

@@ -1,0 +1,45 @@
+\pdfvariable compresslevel = 0
+\documentclass[a4paper]{article}
+\usepackage{flare}
+
+\begin{document}
+
+\section{Links and Destinations}
+
+\includegraphics[
+  scale=0.5,
+  page=1
+]{dummy-2.pdf}
+\newpage
+\includegraphics[
+  scale=0.5,
+  page=2
+]{dummy-2.pdf}
+
+
+\newpage
+
+If we include the same pages once again, we need to change
+the destination names. See options \texttt{flareDestPrefix}
+and \texttt{flareLinkPrefix}.
+
+\includegraphics[
+  scale=0.5,
+  page=1,
+  flareLinkPrefix=foo,
+  flareDestPrefix=foo,
+]{dummy-2.pdf}
+\newpage
+\includegraphics[
+  scale=0.5,
+  page=2,
+  flareLinkPrefix=foo,
+  flareDestPrefix=foo,
+]{dummy-2.pdf}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "example-1"
+%%% End:

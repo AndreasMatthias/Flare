@@ -1,0 +1,143 @@
+%PDF-1.5
+%µ¶
+
+1 0 obj
+<<
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Page
+  /Resources 1 0 R
+  /MediaBox [ 0 0 595.276 841.89 ]
+  /Parent 11 0 R
+  /TestBoolean true
+  /TestInteger 4
+  /TestNumber 1.23
+  /TestName /Foo
+  /TestString (foo)
+  /TestStringHex <FEFF0066006F006F>
+  /TestArray [ 1 2 3 ]
+  /TestDictionary <<
+    /AAA 1
+    /BBB (test)
+  >>
+  /TestStream 11 0 R
+  /TestReference 5 0 R
+  /TestArray2 [ true 4 1.23 /Foo (foo) <FEFF0066006F006F> [ 1
+        2 3 ] <<
+        /AAA 1
+        /BBB 2
+      >> ]
+  /TestArrayWithRef [ 3 0 R 4 0 R ]
+  /TestDictionaryWithRef <<
+    /AAA 3 0 R
+    /BBB 4 0 R
+  >>
+  /TestRefInvalid 999 0 R
+  /TestRefBoolean 3 0 R
+  /TestRefInteger 4 0 R
+  /TestRefNumber 5 0 R
+  /TestRefName 6 0 R
+  /TestRefString 7 0 R
+  /TestRefStringHex 8 0 R
+  /TestRefArray 9 0 R
+  /TestRefDictionary 10 0 R
+  /TestRefStream 11 0 R
+  /TestRefRef 12 0 R
+>>
+endobj
+
+3 0 obj
+true
+endobj
+
+4 0 obj
+4
+endobj
+
+5 0 obj
+1.23
+endobj
+
+6 0 obj
+/Foo
+endobj
+
+7 0 obj
+(foo)
+endobj
+
+8 0 obj
+<FEFF0060006F006F>
+endobj
+
+9 0 obj
+[ 1 2 3 ]
+endobj
+
+10 0 obj
+<<
+  /AAA 1
+  /BBB 2
+>>
+endobj
+
+11 0 obj
+<<
+  /Foo (test)
+  /Length 7
+>>
+stream
+foobar
+
+endstream
+endobj
+
+12 0 obj
+11 0 R
+endobj
+
+13 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 2 0 R ]
+>>
+endobj
+
+14 0 obj
+<<
+  /Type /Catalog
+  /Pages 13 0 R
+>>
+endobj
+
+xref
+0 15
+0000000000 65536 f 
+0000000016 00000 n 
+0000000038 00000 n 
+0000000875 00000 n 
+0000000896 00000 n 
+0000000914 00000 n 
+0000000935 00000 n 
+0000000956 00000 n 
+0000000978 00000 n 
+0000001013 00000 n 
+0000001039 00000 n 
+0000001080 00000 n 
+0000001154 00000 n 
+0000001178 00000 n 
+0000001245 00000 n 
+
+trailer
+<<
+  /Size 15
+  /Root 14 0 R
+  /ID [ <4B76669F72FADD7A14AB59665A7960B9> <F1BEFA8A0C48D1C02EE1A7E537E1C127> ]
+>>
+startxref
+1301
+%%EOF

@@ -1,0 +1,173 @@
+%PDF-1.5
+%µ¶
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm 5 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Resources 4 0 R
+  /MediaBox [ 0 0 595.276 841.89 ]
+  /Parent 2 0 R
+  /Annots 7 0 R
+>>
+endobj
+
+4 0 obj
+<<
+>>
+endobj
+
+5 0 obj
+<<
+  /Fields [ 6 0 R ]
+>>
+endobj
+
+6 0 obj
+<<
+  /FT /Btn
+  /Kids [ 8 0 R ]
+>>
+endobj
+
+7 0 obj
+[ 8 0 R ]
+endobj
+
+8 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /Rect [ 200 500 300 600 ]
+  /Contents (contents)
+  /P 3 0 R
+  /NM (annot-1)
+  /M (D:202105011200+02'00)
+  /F 28
+  /AS /Off
+  /AP <<
+    /N <<
+      /Off 9 0 R
+      /Yes 10 0 R
+    >>
+    /D <<
+      /Off 11 0 R
+      /Yes 12 0 R
+    >>
+  >>
+  /Parent 6 0 R
+>>
+endobj
+
+9 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 100 100 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources 4 0 R
+  /Length 38
+>>
+stream
+0 1 1 rg 0 0 0 RG
+4 w
+2 2 96 96 re f
+
+
+endstream
+endobj
+
+10 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 100 100 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources 4 0 R
+  /Length 38
+>>
+stream
+1 1 0 rg 0 0 0 RG
+4 w
+2 2 96 96 re f
+
+
+endstream
+endobj
+
+11 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 100 100 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources 4 0 R
+  /Length 38
+>>
+stream
+0 1 1 rg 0 0 0 RG
+4 w
+2 2 96 96 re b
+
+
+endstream
+endobj
+
+12 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 100 100 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources 4 0 R
+  /Length 38
+>>
+stream
+1 1 0 rg 0 0 0 RG
+4 w
+2 2 96 96 re b
+
+
+endstream
+endobj
+
+xref
+0 13
+0000000000 65536 f 
+0000000016 00000 n 
+0000000088 00000 n 
+0000000154 00000 n 
+0000000276 00000 n 
+0000000298 00000 n 
+0000000340 00000 n 
+0000000391 00000 n 
+0000000417 00000 n 
+0000000733 00000 n 
+0000000927 00000 n 
+0000001122 00000 n 
+0000001317 00000 n 
+
+trailer
+<<
+  /Size 13
+  /Root 1 0 R
+  /ID [ <89221C61C75CE80AAA4A6AAD51471F56> <3FF4F8B03ADEAF463CD765CB25375F6D> ]
+>>
+startxref
+1512
+%%EOF

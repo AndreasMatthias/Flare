@@ -1,0 +1,90 @@
+%PDF-1.5
+%µ¶
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Resources 4 0 R
+  /MediaBox [ 0 0 595.276 841.89 ]
+  /Parent 2 0 R
+  /Annots 5 0 R
+>>
+endobj
+
+4 0 obj
+<<
+>>
+endobj
+
+5 0 obj
+[ 6 0 R 7 0 R ]
+endobj
+
+6 0 obj
+<<
+  /Type /Annot
+  /Subtype /Text
+  /Rect [ 180 700 200 720 ]
+  /NM (annot-1)
+  /P 3 0 R
+  /Name /Help
+  /Contents (I think we should change this!)
+  /F 28
+  /Border [ 0 0 3 ]
+  /C [ 0 1 .2 ]
+  /T (Comment)
+  /CA .7
+>>
+endobj
+
+7 0 obj
+<<
+  /Type /Annot
+  /Subtype /Text
+  /Rect [ 230 700 250 720 ]
+  /NM (annot-2)
+  /P 3 0 R
+  /C [ .8 .5 .2 ]
+  /IRT 6 0 R
+  /Name /Comment
+  /T (Yes, go ahead!)
+  /StateModel (Review)
+  /State (Accepted)
+>>
+endobj
+
+xref
+0 8
+0000000000 65536 f 
+0000000016 00000 n 
+0000000070 00000 n 
+0000000136 00000 n 
+0000000258 00000 n 
+0000000280 00000 n 
+0000000312 00000 n 
+0000000548 00000 n 
+
+trailer
+<<
+  /Size 8
+  /Root 1 0 R
+  /ID [ <89221C61C75CE80AAA4A6AAD51471F56> <F4CE004FB6E0BF4C0082FEB9B10A00C4> ]
+>>
+startxref
+770
+%%EOF

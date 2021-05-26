@@ -1,0 +1,74 @@
+%PDF-1.5
+%µ¶
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Resources 4 0 R
+  /MediaBox [ 0 0 595.276 841.89 ]
+  /Parent 2 0 R
+  /Annots 5 0 R
+>>
+endobj
+
+4 0 obj
+<<
+>>
+endobj
+
+5 0 obj
+[ 6 0 R ]
+endobj
+
+6 0 obj
+<<
+  /Type /Annot
+  /Subtype /Circle
+  /Rect [ 100 600 300 700 ]
+  /P 3 0 R
+  /Contents <FEFF0074006500730074>
+  /NM (annot-1)
+  /M (D:20210101000000)
+  /F 28
+  /Border [ 0 0 3 ]
+  /C [ 0 .9 .9 ]
+  /T <FEFF0061006E00640072006500610073>
+  /CA .7
+  /IC [ .9 .9 .1 ]
+>>
+endobj
+
+xref
+0 7
+0000000000 00001 f 
+0000000016 00000 n 
+0000000070 00000 n 
+0000000136 00000 n 
+0000000258 00000 n 
+0000000280 00000 n 
+0000000306 00000 n 
+
+trailer
+<<
+  /Size 7
+  /Root 1 0 R
+  /ID [ <89221C61C75CE80AAA4A6AAD51471F56> <91DE9AAAAC6871E0CE014705D7016147> ]
+>>
+startxref
+589
+%%EOF
