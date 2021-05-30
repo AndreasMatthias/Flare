@@ -1,3 +1,6 @@
+env:
+  - PATH=/usr/local/lib/luarocks/bin
+
 install:
   # TeX Live
   - source ./scripts/texlive.sh
