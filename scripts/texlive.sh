@@ -19,6 +19,7 @@ tlmgr update --self
 # install packages
 tlmgr install \
       luatex \
+      luatexbase \
       kvsetkeys \
       etoolbox
 
