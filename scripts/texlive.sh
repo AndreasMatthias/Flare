@@ -22,7 +22,8 @@ tlmgr install \
       luatexbase \
       luapackageloader \
       kvsetkeys \
-      etoolbox
+      etoolbox \
+      nodetree
 
 # no backups
 tlmgr option -- autobackup 0
