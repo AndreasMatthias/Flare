@@ -1,6 +1,3 @@
-env:
-  - PATH=/usr/local/lib/luarocks/bin
-
 install:
   # TeX Live
   - source ./scripts/texlive.sh
@@ -15,6 +12,6 @@ cache:
     - $HOME/.texlive
 
 before_script:
-  - eval $(luarocks path)
+  - eval $(luarocks path --bin)
 
 script: make test
