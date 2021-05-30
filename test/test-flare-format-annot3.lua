@@ -40,6 +40,7 @@ nt = require('nodetree')
 function createTestFile(filename, body)
    infile = 'tmp_' .. filename .. '.tex'
    outfile = 'tmp_' .. filename .. '.pdf'
+   logfile = 'tmp_' .. filename .. '.log'
 
    local fh = io.open('template.tex', 'r')
    local content = fh:read('a')
@@ -50,11 +51,21 @@ function createTestFile(filename, body)
    fh:write(content)
    fh:close()
 
-   local cmd = string.format('lualatex --interaction nonstopmode %s > /dev/null', infile)
+   local cmd = string.format(
+      'lualatex --interaction nonstopmode %s > /dev/null', infile)
+
    local ret = os.execute(cmd)
+   if ret ~= 0 then
+      os.execute(string.format('cat %s', logfile))
+   end
    assert.same(0, ret)
-   os.execute(cmd)
+   
+   local ret = os.execute(cmd)
+   if ret ~= 0 then
+      os.execute(string.format('cat %', logfile))
+   end
    assert.same(0, ret)
+   
    return outfile
 end
 
