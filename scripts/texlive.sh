@@ -23,7 +23,8 @@ tlmgr install \
       luapackageloader \
       kvsetkeys \
       etoolbox \
-      nodetree
+      nodetree \
+      mwe
 
 # no backups
 tlmgr option -- autobackup 0
