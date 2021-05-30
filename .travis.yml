@@ -9,10 +9,12 @@ install:
   - sudo apt-get install luarocks
   - sudo luarocks install busted
 
-  
 cache:
   directories:
     - /tmp/texlive
     - $HOME/.texlive
+
+before_script:
+  - eval $(luarocks path)
 
 script: make test
