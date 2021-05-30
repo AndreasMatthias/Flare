@@ -1,0 +1,15 @@
+install:
+  # TeX Live
+  - source ./scripts/texlive.sh
+
+  # Luarocks
+  - sudo apt-get install luarocks
+  - sudo luarocks install busted
+
+  
+cache:
+  directories:
+    - /tmp/texlive
+    - $HOME/.texlive
+
+script: make test
