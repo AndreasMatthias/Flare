@@ -77,7 +77,4 @@ tds:
 	cp $(DIST-DIR)/$(TDS-ZIP) .
 	rm -r $(DIST-DIR)
 
-	mkdir -p release/
-	mv $(TDS-ZIP) release/
-
 release: tds
