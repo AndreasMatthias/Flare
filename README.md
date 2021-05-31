@@ -38,13 +38,8 @@ Flare is designed for LuaTeX. Other TeX engines are not supported.
 
 
 ## Installation
-Unpack [flare.tds.zip](release/flare.tds.zip) (a TDS-packaged ZIP-file) in the
-TDS tree (aka TEXMF tree).
-
-
-## Feedback
-Bug reports and feedback are welcome and should be made at
-<https://github.com/AndreasMatthias/Flare>.
+Unpack [flare.tds.zip](https://github.com/AndreasMatthias/Flare/releases/latest/download/flare.tds.zip)
+(a TDS-packaged ZIP-file) in the TDS tree (aka TEXMF tree).
 
 
 ## Copyright
