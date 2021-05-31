@@ -1,4 +1,6 @@
 # Flare – LaTeX package
+[![Build Status](https://travis-ci.com/AndreasMatthias/Flare.svg?branch=main)](https://travis-ci.com/AndreasMatthias/Flare)
+
 Flare is a LaTeX package and an extension to `\includegraphics`.
 While `\includegraphics` copies the content stream of a PDF page,
 Flare copies all annotations belonging to this PDF page.
