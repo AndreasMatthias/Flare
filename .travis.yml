@@ -22,4 +22,14 @@ cache:
 before_script:
   - eval $(luarocks path --bin)
 
-script: make test
+script: make test release
+
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "aJ2abL7eYSE2PaoB94zgf9bz0zZNM36mTwjEzykOnnKBB2znwUiXmGmhktplD8ULVBy4KPNG/SYm5ivmhw2H64JFzbxeh+jvvuKEhPtBxmxhRpYix4YmcDmUGu40VBePrqhN3h9A0MWRRQz9Z5xPsXdoB5hok5BROio0ywnteUE+QYxWB/61ZuAgUjxk74T0HDple1zAeYQWgZcGLgAr0dqtoNIQawb1RDp0VHuy9sDe8W6uly8jNlUf6e6R2NcypIxevi6ZpFBkJjpzz/4u7xXImHDcUA1nSVGQzB6jQTPdjU5drg0DfcG/IVI/CMwHjKLry3RjADo2NKG/4z8OKzlzr7cBZl3Wj0+CyjKchZEiJIStSpvou4AiV6vQWId7ivNDPsbn1b0WRZxqDV7YBD9hlkb2H0ly7MPzL9MAlGCNJ6sA9Ej9ZQ7z9D307gcRakQMMNYumVl2H3fPOMn1yiIVmKJXTbACt24B2C4v4iD1tcofh1iMBDdOBT/OAg1pRCBtSGHrC04sEDRnIKKPB/Mz+V+j7Zm59pjqmKLDuiLIzc9JCPaUfxv67TUFc6dwxQEzzD63mF6QI7pIdlaxPH9/qt/C8bek++JNvjpq9KkH0QHU7rRRwTrQi0mIN0nyVyINM1mrKpGHUxICsH/4Y6+IeoOhVZyIw4Bbc5zYxmE="
+  file: "release/flare-tds.zip"
+  skip_cleanup: true
+  on:
+    tags: true

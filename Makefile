@@ -17,16 +17,16 @@ clean:
 	$(MAKE) clean -C test 
 
 distclean: clean
-	rm -f -r auto
+	rm -f -r auto release
 	rm -f $(TDS-ZIP)
 	$(MAKE) distclean -C test
 
-archive-git:
-	tar cjf flare.tar.bz2 .git/
 
+GIT_SHA:=$(shell git log --pretty=format:"%H" -1)
+GIT_SHA_SHORT:=$(shell git log --pretty=format:"%h" -1)
+GIT_DATE:=$(shell git log --pretty=format:"%cs" -1)
 
-VERSION=0.1
-DIST-DIR:=$(shell mktemp -d -p .)
+DIST-DIR=release/tmp
 DIST-TEX-DIR=$(DIST-DIR)/tex/latex/flare/
 DIST-LUA-DIR=$(DIST-TEX-DIR)
 DIST-DOC-DIR=$(DIST-DIR)/doc/latex/flare/
@@ -70,6 +70,8 @@ tds:
 	cp $(DIST-LUA-FILES) $(DIST-LUA-DIR)
 	cp $(DIST-DOC-FILES) $(DIST-DOC-DIR)
 	cp $(DIST-EXP-FILES) $(DIST-EXP-DIR)
+
+	lua5.3 ./.travis/update-metadata.lua $(DIST-TEX-DIR)/flare.sty
 
 	cd $(DIST-DIR); zip -r $(TDS-ZIP) *
 	cp $(DIST-DIR)/$(TDS-ZIP) .
