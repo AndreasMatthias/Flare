@@ -5,13 +5,14 @@ jobs:
 
 install:
   # TeX Live
-  - source ./scripts/texlive.sh
+  - source ./.travis/texlive.sh
+  - cp ./.travis/texmf.cnf /tmp/texlive/
 
   # Lua 5.3, Luarocks
   - sudo apt-get install liblua5.3-0 liblua5.3-dev lua5.3
   - sudo apt-get install luarocks
-  - sudo luarocks install busted
-  - sudo luarocks install serpent
+  - luarocks install --local busted
+  - luarocks install --local serpent
 
 cache:
   directories:

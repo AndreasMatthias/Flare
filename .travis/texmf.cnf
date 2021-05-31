@@ -1,0 +1,9 @@
+LUAROCKS_PATH = ~/.luarocks/share/lua/5.3
+LUAROCKS_CPATH= ~/.luarocks/lib/lua/5.3
+
+% Note: use --shell-escape to run binary lua libraries
+LUAINPUTS = $TEXMFDOTDIR;$TEXMF/scripts/{$progname,$engine,}/{lua,}//;$TEXMF/tex/{luatex,plain,generic,latex,}//;$LUAROCKS_PATH//
+CLUAINPUTS = $TEXMFDOTDIR;$SELFAUTOLOC/lib/{$progname,$engine,}/lua//;$LUAROCKS_CPATH//
+
+% lualatex
+LUAINPUTS.lualatex = $TEXMFDOTDIR;$TEXMF/scripts/{$progname,$engine,}/{lua,}//;$TEXMF/tex/{lualatex,latex,luatex,generic,}//;$LUAROCKS_PATH//
