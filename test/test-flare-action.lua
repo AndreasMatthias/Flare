@@ -20,7 +20,7 @@ loader.add_lua_searchers()
 local bh = require('busted-helper')
 bh.remove_unknown_args()
 
-require('busted.runner')()
+require('busted.runner')({output = 'utfTerminal'})
 require('my_assertions')
 assert:set_parameter('TableFormatLevel', -1)
 print()
