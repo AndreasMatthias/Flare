@@ -32,6 +32,13 @@ Flare specific options shall be given in the optional argument of
 
 See [examples/](examples) for more advanced examples.
 
+Following annotations are implemented so far:
+
+- Square, Circle
+- Highlight, Underline, StrikeOut, Squiggly
+- Text, FreeText
+- Link
+- Line
 
 ## Requirements
 Flare is designed for LuaTeX. Other TeX engines are not supported.
