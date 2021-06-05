@@ -1,0 +1,104 @@
+%PDF-1.5
+%µ¶
+
+1 0 obj
+<<
+  /Type /Page
+  /Contents 5 0 R
+  /Resources 4 0 R
+  /MediaBox [ 0 0 595.276 841.89 ]
+  /Parent 6 0 R
+  /Annots [ 3 0 R ]
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /EmbeddedFile
+  /Params <<
+  >>
+  /Length 41
+>>
+stream
+This is an embedded file.
+Just testing.
+
+
+endstream
+endobj
+
+3 0 obj
+<<
+  /Type /Annot
+  /Subtype /FileAttachment
+  /C [ 1 .9255 .7765 ]
+  /M (D:202105029124700)
+  /Name /PushPin
+  /F 4
+  /FS <<
+    /Type /Filespec
+    /F (foo.txt)
+    /EF <<
+      /F 2 0 R
+    >>
+  >>
+  /Rect [ 139.746 702.092 163.746 716.092 ]
+>>
+endobj
+
+4 0 obj
+<<
+>>
+endobj
+
+5 0 obj
+<<
+  /Length 79
+>>
+stream
+0 g 0 G
+0 g 0 G
+0 g 0 G
+BT
+/F19 9.9626 Tf 294.167 90.438 Td [(1)]TJ
+0 g 0 G
+ET
+
+endstream
+endobj
+
+6 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 1 0 R ]
+>>
+endobj
+
+7 0 obj
+<<
+  /Type /Catalog
+  /Pages 6 0 R
+>>
+endobj
+
+xref
+0 8
+0000000000 65536 f 
+0000000016 00000 n 
+0000000160 00000 n 
+0000000294 00000 n 
+0000000558 00000 n 
+0000000580 00000 n 
+0000000712 00000 n 
+0000000778 00000 n 
+
+trailer
+<<
+  /Size 8
+  /Root 7 0 R
+  /ID [ <CC13A532E09155E3A4C662CA4D1E880A> <21F77520B399842DCDCB13AA4EE365C5> ]
+>>
+startxref
+832
+%%EOF

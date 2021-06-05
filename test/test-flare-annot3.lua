@@ -281,4 +281,67 @@ test('Page:getAnnotLine()',
 end)
 
 
+test('Page:getAnnotFileAttachment() #ok',
+     function()
+
+        --
+        -- pdf/fileattachment-01.pdf
+        --
+        local pdf_fn = createTestFile(
+           'fileattachment-01',
+           '\\includegraphics[scale=0.5]{pdf/fileattachment-01.pdf}')
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        assert.same('Annot', annot.Type)
+        assert.same('FileAttachment', annot.Subtype)
+        assert.same(page_objnum, luatex.getreference(annot, 'P'))
+        assert.same('PushPin', annot.Name)
+        
+        assert.same('Filespec', annot.FS.Type)
+        assert.same('fileattachment.txt', annot.FS.F)
+
+
+        --
+        -- pdf/fileattachment-02.pdf
+        --
+        local pdf_fn = createTestFile(
+           'fileattachment-02',
+           '\\includegraphics[scale=0.5]{pdf/fileattachment-02.pdf}')
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        assert.same('Annot', annot.Type)
+        assert.same('FileAttachment', annot.Subtype)
+        assert.same(page_objnum, luatex.getreference(annot, 'P'))
+        assert.same('PushPin', annot.Name)
+        
+        assert.same('Filespec', annot.FS.Type)
+        assert.same('foo.txt', annot.FS.F)
+
+        local stream, len = pdfe.readwholestream(annot.FS.EF.F)
+        assert.same('This is an embedded file.\n' ..
+                    'Just testing.\n\n',
+                    stream)
+        assert.same(41, len)
+        
+end)
+
+
 end) -- describe

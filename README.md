@@ -35,10 +35,11 @@ See [examples/](examples) for more advanced examples.
 Following annotations are implemented so far:
 
 - Square, Circle
-- Highlight, Underline, StrikeOut, Squiggly
+- TextMarkup (Highlight, Underline, Squiggly, StrikeOut)
 - Text, FreeText
 - Link
 - Line
+- FileAttachment
 
 ## Requirements
 Flare is designed for LuaTeX. Other TeX engines are not supported.
