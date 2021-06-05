@@ -37,72 +37,59 @@ local ignoredKeys = {
 -- @section formatting_objects
 
 
---- Formats a pdf boolean, eg: `true`.
--- @pdfe obj Dictionary or Array
--- @keyidx key Key or index (one-based indexing)
+--- Returns a boolean value.
+-- @pdfe obj dictionary or Array
+-- @keyidx key key or index (one-based indexing)
+-- @return Boolean or user string
+function Page:getBoolean(obj, key)
+   local user = self:getUserInput(key)
+   if type(user) == 'string' then
+      return user
+   else
+      key = self:zero_based_indexing(obj, key)
+      return pdfe.getboolean(obj, key)
+   end
+end
+
+
+--- Returns an integer.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
+-- @number scale scaling factor
+-- @return Integer or user string
+function Page:getInteger(obj, key, scale)
+   local user = self:getUserInput(key)
+   if type(user) == 'string' then
+      return user
+   else
+      key = self:zero_based_indexing(obj, key)
+      return self:scaleNumber(pdfe.getinteger(obj, key), scale)
+   end
+end
+
+
+--- Returns a number.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
+-- @number scale scaling factor
+-- @return Number or user string
+function Page:getNumber(obj, key, scale)
+   local user = self:getUserInput(key)
+   if type(user) == 'string' then
+      return user
+   else
+      key = self:zero_based_indexing(obj, key)
+      return self:scaleNumber(pdfe.getnumber(obj, key), scale)
+   end
+end
+
+
+--- Returns a formatted pdf name object, eg: `/Bar`.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
 -- @return Formatted string
-function Page:formatBoolean(obj, key)
-   local user = self:formatUserInput(key)
-   if type(user) == 'string' then
-      return user
-   else
-      key = self:zero_based_indexing(obj, key)
-      local val = pdfe.getboolean(obj, key)
-      if val == true or val == false then
-         return string.format('%s', val)
-      else
-         return nil
-      end
-   end
-end
-
-
----Formats a pdf integer, eg: `1`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
--- @return Formatted string or nil
-function Page:formatInteger(obj, key)
-   local user = self:formatUserInput(key)
-   if type(user) == 'string' then
-      return user
-   else
-      key = self:zero_based_indexing(obj, key)
-      local val = pdfe.getinteger(obj, key)
-      if val then
-         return string.format('%d', val)
-      else
-         return nil
-      end
-   end
-end
-
-
----Formats a pdf number, eg: `1.23`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
--- @return Formatted string or nil
-function Page:formatNumber(obj, key)
-   local user = self:formatUserInput(key)
-   if type(user) == 'string' then
-      return user
-   else
-      key = self:zero_based_indexing(obj, key)
-      local val = pdfe.getnumber(obj, key)
-      if val then
-         return string.format('%.5g', val)
-      else
-         return nil
-      end
-   end
-end
-
-
----Formats an pdf name, eg: `/Bar`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
--- @return Formatted string or nil
-function Page:formatName(obj, key)
-   local user = self:formatUserInput(key)
+function Page:getName(obj, key)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
@@ -117,12 +104,12 @@ function Page:formatName(obj, key)
 end
 
 
----Formats an pdf string, eg: `(test)`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
--- @return Formatted string or nil
-function Page:formatString(obj, key)
-   local user = self:formatUserInput(key)
+--- Returns a pdf string, eg: `(test)`.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
+-- @return Formatted string
+function Page:getString(obj, key)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
@@ -143,7 +130,7 @@ end
 
 
 --- Checks if string is utf-16 encoded.
--- @string str String
+-- @string str string
 -- @return Boolean
 function Page:is_utf16(str)
    if str:sub(1, 2) == '\xFE\xFF' then
@@ -183,12 +170,31 @@ function Page:clean_utf16(str, hex)
 end
 
 
---- Returns a @{Types:pdfarray} of formatted items, eg: `{'1', '2', '3'}`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
+--- Scales a number.
+-- If `scale` is a number it acts as a scaling factor. If it is
+-- `true` then the scaling factor of the page (image) is used
+-- for scaling. If it is `false` no scaling is applied.
+-- @numbool num number
+-- @number scale scaling factor
+-- @return Scaled number
+function Page:scaleNumber(num, scale)
+   if tonumber(scale) then
+      return num * scale
+   elseif scale == true then
+      return num * 0.5 * (self.ctm.a + self.ctm.d)
+   else
+      return num
+   end
+end
+
+
+--- Returns a @{Types:pdfarray}.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
+-- @number scale scaling factor
 -- @return @{Types:pdfarray}
-function Page:getArray(obj, key)
-   local user = self:formatUserInput(key)
+function Page:getArray(obj, key, scale)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
@@ -196,12 +202,7 @@ function Page:getArray(obj, key)
       if array then
          local t = pdfarray:new()
          for idx = 1, #array do
-            -- TODO: no conversion to string if type is number or integer.
-            -- Easier for unit testing.
-            -- Maybe it should return a special type, similar to pdfarray
-            -- and pdfdictionary, for all types? Then string conversion is
-            -- not necessary here at all.
-            t[#t + 1] = self:formatObj(array, idx)
+            t[#t + 1] = self:getObj(array, idx, scale)
          end
          return t
       else
@@ -211,34 +212,13 @@ function Page:getArray(obj, key)
 end
 
 
-function Page:getArrayScaled(obj, key, scale)
-   local user = self:formatUserInput(key)
-   if type(user) == 'string' then
-      return user
-   else
-      local array = obj[key]
-      if array then
-         local t = pdfarray:new()
-         for idx = 1, #array do
-            local val = pdfe.getnumber(array, idx - 1)
-            t[#t + 1] = self:scaleNumber(val, scale)
-         end
-         pkg.pp(t)
-         return t
-      else
-         return nil
-      end
-   end
-end
-
-
---- Returns a @{Types:pdfdictionary} with formatted items,
--- eg: `{ A = '1', B = '2'}`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
+--- Returns a @{Types:pdfdictionary}.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
+-- @number scale scaling factor
 -- @return @{Types:pdfdictionary}
-function Page:getDictionary(obj, key)
-   local user = self:formatUserInput(key)
+function Page:getDictionary(obj, key, scale)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
@@ -246,7 +226,7 @@ function Page:getDictionary(obj, key)
       if dict then
          local t = pdfdictionary:new()
          for k, _ in pairs(pdfe.dictionarytotable(dict)) do
-            t[k] = self:formatObj(dict, k)
+            t[k] = self:getObj(dict, k, scale)
          end
          return t
       else
@@ -256,29 +236,27 @@ function Page:getDictionary(obj, key)
 end
 
 
---- Returns a @{Types:pdfdictionary} with formatted items,
--- eg: `{ A = '1', B = '2'}`.
--- Contrary to other format-functions which use an indirect object
+--- Returns a @{Types:pdfdictionary}.
+-- Contrary to most other functions which use an indirect object
 -- reference (`obj[key]`), this function uses the object directly (`dict`).
--- @pdfe dict Dicionary
+-- @pdfe dict dicionary
+-- @number scale scaling factor
 -- @return @{Types:pdfdictionary}
-function Page:getDictionary2(dict)
+function Page:getDictionary2(dict, scale)
    local t = pdfdictionary:new()
    for k, _ in pairs(pdfe.dictionarytotable(dict)) do
-      t[k] = self:formatObj(dict, k)
+      t[k] = self:getObj(dict, k, scale)
    end
    return t
 end
 
 
---- Formats a pdf stream object as dictionary entry, eg `/Foo 23 0 R`.
--- Note that stream objects are always indirect objects. Thus this
--- function returns a reference to the stream. The actual stream object
--- is created internally, but is not exposed outside this function.
--- @pdfe obj Dictionary
--- @string key Key
-function Page:formatStream(obj, key)
-   local user = self:formatUserInput(key)
+--- Copies a stream and returns a reference to it.
+-- @pdfe obj dictionary
+-- @string key key
+-- @return Formatted pdf reference, eg `9 0 R`
+function Page:getStream(obj, key)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
@@ -291,17 +269,17 @@ function Page:formatStream(obj, key)
 end
 
 
----Formats an pdf reference, eg: `3 0 R`.
+--- Returns a reference, eg: `3 0 R`.
 -- As a side effect it copies the referenced pdf object.
--- @pdfe obj Dictionary
--- @string key Key
+-- @pdfe obj dictionary
+-- @string key key
 -- @return Formatted string
-function Page:formatReference(obj, key)
-   local user = self:formatUserInput(key)
+function Page:getReference(obj, key)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
-      local _, ref, _ = self:getfromobj(obj, key)
+      local _, ref, _ = luatex.getfromobj(obj, key)
       local ptype, pvalue, pdetail = pdfe.getfromreference(ref)
       if ptype == luatex.pdfeObjType.none or
          ptype == luatex.pdfeObjType.null then
@@ -318,7 +296,7 @@ function Page:formatReference(obj, key)
          return string.format('%d 0 R', n)
 
       elseif ptype == luatex.pdfeObjType.stream then
-         return self:formatStream(obj, key)
+         return self:getStream(obj, key)
 
       elseif ptype == luatex.pdfeObjType.reference then
          -- Note, that getfromreference() never returns a reference.
@@ -332,37 +310,39 @@ function Page:formatReference(obj, key)
 end
 
 
---- Formats a pdf string or pdf stream as dictionary entry.
--- @pdfe obj Dictionary
--- @string key Key
--- @return Formatted string
-function Page:formatStringOrStream(obj, key)
+--- Returns a string or a reference to a stream.
+-- Distributes work to @{Page:getString} and @{Page:getStream}.
+-- @pdfe obj dictionary
+-- @string key key
+-- @return String or reference to stream
+function Page:getStringOrStream(obj, key)
    if ignoredKeys[key] then
       return nil
    end
-   local user = self:formatUserInput(key)
+   local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
       local val = pdfe.getstring(obj, key)
       if val ~= nil then
-         return self:formatString(obj, key)
+         return self:getString(obj, key)
       end
       local val =pdfe.getstream(obj, key)
       if val ~= nil then
-         return self:formatStream(obj, key)
+         return self:getStream(obj, key)
       end
       return nil
    end
 end
 
 
---- Formats an arbitrary pdf object.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
--- @return Formatted string
-function Page:formatObj(obj, key)
-   local ptype, _, _ = self:getfromobj(obj, key)
+--- Returns a pdf object.
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
+-- @number scale scaling factor
+-- @return Pdf object
+function Page:getObj(obj, key, scale)
+   local ptype, _, _ = luatex.getfromobj(obj, key)
 
    if ptype == nil or
       ptype == luatex.pdfeObjType.none or
@@ -370,19 +350,19 @@ function Page:formatObj(obj, key)
       return ''
 
    elseif ptype == luatex.pdfeObjType.boolean then
-      return self:formatBoolean(obj, key)
+      return self:getBoolean(obj, key)
 
    elseif ptype == luatex.pdfeObjType.integer then
-      return self:formatInteger(obj, key)
+      return self:getInteger(obj, key, scale)
 
    elseif ptype == luatex.pdfeObjType.number then
-      return self:formatNumber(obj, key)
+      return self:getNumber(obj, key, scale)
 
    elseif ptype == luatex.pdfeObjType.name then
-      return self:formatName(obj, key)
+      return self:getName(obj, key)
 
    elseif ptype == luatex.pdfeObjType.string then
-      return self:formatString(obj, key)
+      return self:getString(obj, key)
 
    elseif ptype == luatex.pdfeObjType.array then
       return self:getArray(obj, key)
@@ -391,29 +371,13 @@ function Page:formatObj(obj, key)
       return self:getDictionary(obj, key)
 
    elseif ptype == luatex.pdfeObjType.stream then
-      return self:formatStream(obj, key)
+      return self:getStream(obj, key)
 
    elseif ptype == luatex.pdfeObjType.reference then
-      return self:formatReference(obj, key)
+      return self:getReference(obj, key)
 
    else
       pkg.error('Not a valid pdfe type: ' .. ptype)
-   end
-end
-
-
---- Distributes work to `pdfe.getfromdictionary()` or `pdfe.getfromarray()`.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
--- @return Type, value, detail
-function Page:getfromobj(obj, key)
-   local t = pdfe.type(obj)
-   if t == 'pdfe.array' then
-      return pdfe.getfromarray(obj, key)
-   elseif t == 'pdfe.dictionary' then
-      return pdfe.getfromdictionary(obj, key)
-   else
-      pkg.error('Internal error: Page:getfromobj()')
    end
 end
 
@@ -436,8 +400,8 @@ end
 -- Return `key` as a zero-based index if `key` is a `number`
 -- (ie. `obj` is a `pdfe-array`). Otherwise (ie. `obj` is a
 -- dictionary) returns `key` unmodified.
--- @pdfe obj Dictionary or array
--- @keyidx key Key or index (one-based indexing)
+-- @pdfe obj dictionary or array
+-- @keyidx key key or index (one-based indexing)
 -- @return Key or index (zero-based indexing)
 function Page:zero_based_indexing(obj, key)
    if type(key) == 'number' then
@@ -458,10 +422,27 @@ end
 -- `nil` if no user input is available. But it might return a table
 -- of type `{op = <op>, val = <val>}` if user input cannot be represented
 -- as a formatted string, eg. the `scale` parameter.
--- @string key Key
+-- @string key key
 -- @return Formatted string or `nil`
-function Page:formatUserInput(key)
-   local user = self:getUserInput(key)
+function Page:getUserInput(key)
+   local page = self.GinKV.page
+   local annotId = self.annotId
+   local trails = {
+      {page, annotId},
+      {page, 'all'},
+      {'all', annotId},
+      {'all', 'all'}
+   }
+   local user = nil
+   for _, v in pairs(trails) do
+      local page = v[1]
+      local annotId = v[2]
+      if self:checkUserInput(page, annotId, key) then
+         user = self.FlareKV[page][annotId][key]
+      end
+   end
+
+   -- local user = self:getUserInput(key)
    if user == nil then
       return nil
    elseif user.op == 'replace' then
@@ -480,36 +461,10 @@ function Page:formatUserInput(key)
 end
 
 
---- Returns user input if available.
--- The returned value is a table of type `{op = <op>, val = <val>}`
--- corresponding to the specified `key`, the current PDF page, and
--- the current annotation ID.
--- @string key Key
--- @return User input or `nil`
-function Page:getUserInput(key)
-   local page = self.GinKV.page
-   local annotId = self.annotId
-   local trails = {
-      {page, annotId},
-      {page, 'all'},
-      {'all', annotId},
-      {'all', 'all'}
-   }
-   for _, v in pairs(trails) do
-      local page = v[1]
-      local annotId = v[2]
-      if self:checkUserInput(page, annotId, key) then
-         return self.FlareKV[page][annotId][key]
-      end
-   end
-   return nil
-end
-
-
 --- Returns `true` if user input available.
--- @numstr page Page number or `'all'`
--- @numstr annotId Annotation ID or `'all'`
--- @string key Key
+-- @numstr page page number or `'all'`
+-- @numstr annotId annotation ID or `'all'`
+-- @string key key
 -- @return Boolean
 function Page:checkUserInput(page, annotId, key)
    if self.FlareKV[page] and

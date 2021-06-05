@@ -19,6 +19,8 @@
 -- @module Luatex
 local Luatex = {}
 
+local pkg = require('flare-pkg')
+
 
 --- Return the object number of a reference.
 -- @pdfe t array or dictionary
@@ -60,6 +62,22 @@ Luatex.pdfeDestType = {
    fitbv = 6,
    fitr  = 7,
 }
+
+
+--- Distributes work to `pdfe.getfromdictionary()` or `pdfe.getfromarray()`.
+-- @pdfe obj Dictionary or array
+-- @keyidx key Key or index (one-based indexing)
+-- @return Type, value, detail
+function Luatex.getfromobj(obj, key)
+   local t = pdfe.type(obj)
+   if t == 'pdfe.array' then
+      return pdfe.getfromarray(obj, key)
+   elseif t == 'pdfe.dictionary' then
+      return pdfe.getfromdictionary(obj, key)
+   else
+      pkg.error('Internal error: Page:getfromobj()')
+   end
+end
 
 
 return Luatex

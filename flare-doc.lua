@@ -241,7 +241,7 @@ end
 --- Checks if cache is dirty and displays a warning.
 function Doc:warnIfCacheDirty()
    if self.dirtyCache then
-      pkg.warning('Label(s) may have changed. Rerun to get annotations right')
+      pkg.warning('Annotations may have changed. Rerun to get annotations right')
    end
 end
 

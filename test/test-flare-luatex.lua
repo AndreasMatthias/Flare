@@ -39,7 +39,7 @@ nt = require('nodetree')
 
 describe('Testing flare-luatex.lua:', function()
             
-test('Luatex:getreference()',
+test('Luatex.getreference()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         assert.same(3,
@@ -50,6 +50,23 @@ test('Luatex:getreference()',
                         luatex.getreference(pageDict.TestDictionaryWithRef, 'AAA'))
         assert.same(4,
                         luatex.getreference(pageDict.TestDictionaryWithRef, 'BBB'))
+end)
+
+
+test('Luatex.getfromobj()',
+     function()
+        local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
+        local p = Page:new(Doc:new())
+
+        local ptype, pval, pdetail = luatex.getfromobj(pageDict['TestDictionary'], 'AAA')
+        assert.same(3, ptype)
+        assert.same(1, pval)
+        assert.same(nil, pdetail)
+
+        local ptype, pval, pdetail = luatex.getfromobj(pageDict['TestArray'], 2)
+        assert.same(3, ptype)
+        assert.same(2, pval)
+        assert.same(nil, pdetail)
 end)
 
 

@@ -101,8 +101,8 @@ test('Page:getAnnotText()',
         assert.same('Help', annot.Name)
         assert.near(0.7, annot.CA, 0.01)
         assert.same(p:getPageObjNum(1), luatex.getreference(annot, 'P'))
-        assert.same({'0', '0', '1.5'}, p:getArray(annot, 'Border'))
-        assert.same({'0', '1', '1'}, p:getArray(annot, 'C'))
+        assert.same({0, 0, 1.5}, p:getArray(annot, 'Border'))
+        assert.same({0, 1, 1}, p:getArray(annot, 'C'))
 end)
 
 
@@ -135,7 +135,7 @@ test('Page:getAnnotFreeText()',
         assert.same('FreeTextCallout', annot.IT)
         assert.same(2, annot.BS.W)
         assert.same('D', annot.BS.S)
-        assert.same({'6', '3'}, p:getArray(annot.BS, 'D'))
+        assert.same({6, 3}, p:getArray(annot.BS, 'D'))
         assert.same('S', annot.BE.S)
         assert.same(1, annot.BE.I)
 
@@ -277,7 +277,7 @@ test('Page:getAnnotLine()',
         assert.same(3, annot.LLO)
         assert.same('Top', annot.CP)
         assert.same(true, annot.Cap)
-        assert.same({'10', '5'}, p:getArray(annot, 'CO'))
+        assert.same({10, 5}, p:getArray(annot, 'CO'))
 end)
 
 

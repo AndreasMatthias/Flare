@@ -76,11 +76,11 @@ test('Page:getAnnotCommonEntries()',
         assert.same('<FEFF0074006500730074>', t.Contents)
         assert.same('(annot-1)', t.NM)
         assert.same('(D:20210101000000)', t.M)
-        assert.same('28', t.F)
+        assert.same(28, t.F)
         -- AP
         -- AS
         assert.same('[ 0 0 3 ]', t.Border)
-        assert.same({'0', '0.9', '0.9'}, t.C)
+        assert.same({0, 0.9, 0.9}, t.C)
         -- StructParent
         -- OC
 end)
@@ -112,11 +112,11 @@ end)
 -- end)
 
 
-test('Page:formatP()',
+test('Page:getP()',
      function()
         local d = Doc:new()
         local p = Page:new(d)
-        assert.same('1 0 R', p:formatP())
+        assert.same('1 0 R', p:getP())
 end)
 
 
@@ -226,23 +226,6 @@ test('Page:scaleNumber()',
         assert.same(6, p:scaleNumber(3, 2))
         assert.same(6, p:scaleNumber(3, true))
         assert.same(3, p:scaleNumber(3, false))
-end)
-
-
-test('Page:formatNumberScaled()',
-     function()
-        local d = Doc:new()
-        local p = Page:new(d)
-        p:setGinKV('page', 1)
-        p.annotId = 1
-
-        local pdf = pdfe.open('pdf/line-01.pdf')
-        local annot = pdfe.getpage(pdf, 1).Annots[1]
-
-        assert.same('50', p:formatNumberScaled(annot, 'LL', 1))
-        assert.same('100', p:formatNumberScaled(annot, 'LL', 2))
-        p:setFlareKV(1, 1, 'LL', 'replace', '33')
-        assert.same('33', p:formatNumberScaled(annot, 'LL', 2))
 end)
 
 

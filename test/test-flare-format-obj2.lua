@@ -168,164 +168,131 @@ setup(function()
 end)
 
 
-test('Page:formatBoolean()', function()
+test('Page:getBoolean()', function()
         local page = Page:new(Doc:new())
         func = function(obj, key)
-           return page:formatBoolean(obj, key)
+           return page:getBoolean(obj, key)
         end
 
         -- dictionary
-        assert.same(nil,
-                        func({ Foo = 'wrong type' }, 'Foo'))
-        assert.same('true',
-                        func({ Foo = true }, 'Foo'))
-        assert.same('false',
-                        func({ Foo = false }, 'Foo'))
+        assert.same(nil, func({ Foo = 'wrong type' }, 'Foo'))
+        assert.same(true, func({ Foo = true }, 'Foo'))
+        assert.same(false, func({ Foo = false }, 'Foo'))
         -- array
-        assert.same(nil,
-                        func({ nil }, 1))
-        assert.same('true',
-                        func({ true }, 1))
-        assert.same('false',
-                        func({ true, false, true }, 2))
-end)
-
-test('Page:formatInteger()', function()
-        local page = Page:new(Doc:new())
-        func = function(obj, key)
-           return page:formatInteger(obj, key)
-        end
-
-        -- dictionary
-        assert.same(nil,
-                        func({ Foo = nil }, 'Foo'))
-        assert.same(nil,
-                        func({ Foo = 'wrong type' }, 'Foo'))
-        assert.same('123',
-                        func({ Foo = 123 }, 'Foo'))
-        -- array
-        assert.same(nil,
-                        func({ nil }, 1))
-        assert.same(nil,
-                        func({ 'wrong type' }, 1))
-        assert.same('456',
-                        func({ 123, 456, 789 }, 2))
+        assert.same(nil, func({ nil }, 1))
+        assert.same(true, func({ true }, 1))
+        assert.same(false, func({ true, false, true }, 2))
 end)
 
 
-test('Page:formatNumber()', function()
+test('Page:getInteger()', function()
         local page = Page:new(Doc:new())
         func = function(obj, key)
-           return page:formatNumber(obj, key)
+           return page:getInteger(obj, key)
         end
 
         -- dictionary
-        assert.same(nil,
-                        func({ Foo = nil }, 'Foo'))
-        assert.same(nil,
-                        func({ Foo = 'wrong type' }, 'Foo'))
-        assert.same('1.23',
-                        func({ Foo = 1.23 }, 'Foo'))
+        assert.same(nil, func({ Foo = nil }, 'Foo'))
+        assert.same(nil, func({ Foo = 'wrong type' }, 'Foo'))
+        assert.same(123, func({ Foo = 123 }, 'Foo'))
         -- array
-        assert.same(nil,
-                        func({ nil }, 1))
-        assert.same(nil,
-                        func({ 'wrong type' }, 1))
-        assert.same('4.56',
-                        func({ 1.23, 4.56, 7.89 }, 2))
+        assert.same(nil, func({ nil }, 1))
+        assert.same(nil, func({ 'wrong type' }, 1))
+        assert.same(456, func({ 123, 456, 789 }, 2))
 end)
 
 
-test('Page:formatName()', function()
+test('Page:getNumber()', function()
         local page = Page:new(Doc:new())
         func = function(obj, key)
-           return page:formatName(obj, key)
+           return page:getNumber(obj, key)
         end
+
         -- dictionary
-        assert.same(nil,
-                        func({ nil }, 'Foo'))
-        assert.same(nil,
-                        func({ 123 }, 'Foo'))
-        assert.same('/Bar',
-                        func({ Foo = 'Bar' }, 'Foo'))
+        assert.same(nil, func({ Foo = nil }, 'Foo'))
+        assert.same(nil, func({ Foo = 'wrong type' }, 'Foo'))
+        assert.same(1.23, func({ Foo = 1.23 }, 'Foo'))
         -- array
-        assert.same(nil,
-                        func({ nil }, 1))
-        assert.same(nil,
-                        func({ 123 }, 1))
-        assert.same('/Bar',
-                        func({ 'Foo', 'Bar', 'Baz' }, 2))
+        assert.same(nil, func({ nil }, 1))
+        assert.same(nil, func({ 'wrong type' }, 1))
+        assert.same(4.56, func({ 1.23, 4.56, 7.89 }, 2))
 end)
 
 
-test('Page:formatString()', function()
+test('Page:getName()', function()
         local page = Page:new(Doc:new())
         func = function(obj, key)
-           return page:formatString(obj, key)
+           return page:getName(obj, key)
         end
         -- dictionary
-        assert.same(nil,
-                        func({ Foo = nil }, 'Foo'))
-        assert.same(nil,
-                        func({ Foo = 123 }, 'Foo'))
-        assert.same('(Bar)',
-                        func({ Foo = '(Bar)' }, 'Foo'))
-        assert.same('<Bar>',
-                        func({ Foo = '<Bar>' }, 'Foo'))
+        assert.same(nil, func({ nil }, 'Foo'))
+        assert.same(nil, func({ 123 }, 'Foo'))
+        assert.same('/Bar', func({ Foo = 'Bar' }, 'Foo'))
+        -- array
+        assert.same(nil, func({ nil }, 1))
+        assert.same(nil, func({ 123 }, 1))
+        assert.same('/Bar', func({ 'Foo', 'Bar', 'Baz' }, 2))
+end)
+
+
+test('Page:getString()', function()
+        local page = Page:new(Doc:new())
+        func = function(obj, key)
+           return page:getString(obj, key)
+        end
+        -- dictionary
+        assert.same(nil, func({ Foo = nil }, 'Foo'))
+        assert.same(nil, func({ Foo = 123 }, 'Foo'))
+        assert.same('(Bar)', func({ Foo = '(Bar)' }, 'Foo'))
+        assert.same('<Bar>', func({ Foo = '<Bar>' }, 'Foo'))
         assert.same('<FEFF004200610072>',
-                        func({ Foo = '(\xfe\xff\x00\x42\x00\x61\x00\x72)' }, 'Foo'))
+                    func({ Foo = '(\xfe\xff\x00\x42\x00\x61\x00\x72)' }, 'Foo'))
         -- array
-        assert.same(nil,
-                        func({ nil }, 1))
-        assert.same(nil,
-                        func({ 123 }, 1))
-        assert.same('(Bar)',
-                        func({ '', '(Bar)' }, 2))
-        assert.same('<Bar>',
-                        func({ '', '<Bar>' }, 2))
+        assert.same(nil, func({ nil }, 1))
+        assert.same(nil, func({ 123 }, 1))
+        assert.same('(Bar)', func({ '', '(Bar)' }, 2))
+        assert.same('<Bar>', func({ '', '<Bar>' }, 2))
         assert.same('<FEFF004200610072>',
-                        func({ '', '(\xfe\xff\x00\x42\x00\x61\x00\x72)' }, 2))
+                    func({ '', '(\xfe\xff\x00\x42\x00\x61\x00\x72)' }, 2))
 end)
 
 
-test('Page:formatObj()', function()
+test('Page:getObj()', function()
         local page = Page:new(Doc:new())
         func = function(obj, key)
-           return page:formatObj(obj, key)
+           return page:getObj(obj, key)
         end
         -- obj from dictionary
-        assert.same('true',
-                        func({ Foo = true }, 'Foo'))
-        assert.same('4',
-                        func({ Foo = 4 }, 'Foo'))
-        assert.same('1.23',
-                        func({ Foo = 1.23 }, 'Foo'))
+        assert.same(true,
+                    func({ Foo = true }, 'Foo'))
+        assert.same(4,
+                    func({ Foo = 4 }, 'Foo'))
+        assert.same(1.23,
+                    func({ Foo = 1.23 }, 'Foo'))
         assert.same('(foo)',
-                        func({ Foo = '(foo)' }, 'Foo'))
+                    func({ Foo = '(foo)' }, 'Foo'))
         assert.same('<foo>',
-                        func({ Foo = '<foo>' }, 'Foo'))
-        assert.same({'1', '2', '3'},
-                        func({ Foo = {1, 2, 3} }, 'Foo'))
-        assert.same(
-           {A = '1', B = '2'},
-           func({Foo = {A = 1, B = 2}}, 'Foo'))
+                    func({ Foo = '<foo>' }, 'Foo'))
+        assert.same({1, 2, 3},
+                    func({ Foo = {1, 2, 3} }, 'Foo'))
+        assert.same({A = 1, B = 2},
+                    func({Foo = {A = 1, B = 2}}, 'Foo'))
         
         -- obj from array
-        assert.same('true',
-                        func({ true }, 1))
-        assert.same('2',
-                        func({ 1, 2, 3 }, 2))
-        assert.same('3.45',
-                        func({ 1.23, 3.45, 7.89 }, 2))
+        assert.same(true,
+                    func({ true }, 1))
+        assert.same(2,
+                    func({ 1, 2, 3 }, 2))
+        assert.same(3.45,
+                    func({ 1.23, 3.45, 7.89 }, 2))
         assert.same('(foo)',
-                        func({ '(foo)' }, 1))
+                    func({ '(foo)' }, 1))
         assert.same('<foo>',
-                        func({ '<foo>' }, 1))
-        assert.same({'3', '4'},
-                        func({ {1, 2}, {3, 4} }, 2))
-        assert.same(
-           {A = '1', B = '2'},
-           func({{A = 1, B = 2}}, 1))
+                    func({ '<foo>' }, 1))
+        assert.same({3, 4},
+                    func({ {1, 2}, {3, 4} }, 2))
+        assert.same({A = 1, B = 2},
+                    func({{A = 1, B = 2}}, 1))
 end)
 
 end) --describe

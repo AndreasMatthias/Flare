@@ -23,11 +23,6 @@ fi
 file=$(basename $1)
 test_files=$(find test/ -regex "test/test-$(basename $file .lua)[0-9]*.lua")
 
-# cd to top-most project directory
-pwd=$PWD
-topdir=${pwd/%\/flare*}/flare
-cd $topdir
-
 # collect all functions
 funcs=$(cat $file | sed -n -e 's/^function \+\([^[:space:](]\+\) *(.*/\1/p')
 

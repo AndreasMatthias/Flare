@@ -96,43 +96,43 @@ function Page:formatTable(t, dict_tags)
 end
 
 
---- Formats common annotation entries.
+--- Returns common annotation entries.
 -- @pdfe annot annotation dictionary
 -- @number objnum object number of annotation
--- @return Formatted String
+-- @return Table
 function Page:getAnnotCommonEntries(annot, objnum)
    return {
-      Subtype = self:formatName(annot, 'Subtype'),
-      Contents = self:formatString(annot, 'Contents'),
-      P = self:formatP(annot, 'P'),
-      NM = self:formatString(annot, 'NM'),
-      M = self:formatString(annot, 'M'),
-      F = self:formatInteger(annot, 'F'),
+      Subtype = self:getName(annot, 'Subtype'),
+      Contents = self:getString(annot, 'Contents'),
+      P = self:getP(annot, 'P'),
+      NM = self:getString(annot, 'NM'),
+      M = self:getString(annot, 'M'),
+      F = self:getInteger(annot, 'F'),
       AP = self:getDictionary(annot, 'AP'),
-      AS = self:formatName(annot, 'AS'),
+      AS = self:getName(annot, 'AS'),
       Border = self:formatBorder(annot, true),
       C = self:getArray(annot, 'C'),
-      StructParent = self:formatInteger(annot, 'StructParent'),
+      StructParent = self:getInteger(annot, 'StructParent'),
       OC = self:getDictionary(annot, 'OC'),
    }
 end
 
 
---- Formats markup annotation entries.
+--- Returns markup annotation entries.
 -- @pdfe annot annotation dictionary
 -- @number objnum object number of annotation
--- @return Formatted String
+-- @return Table
 function Page:getAnnotMarkupEntries(annot, objnum)
    return {
-      T = self:formatString(annot, 'T'),
+      T = self:getString(annot, 'T'),
       Popup = self:getDictionary(annot, 'Popup'),
-      CA = self:formatNumber(annot, 'CA'),
-      RC = self:formatStringOrStream(annot, 'RC'),
-      CreationDate = self:formatString(annot, 'CreationDate'),
+      CA = self:getNumber(annot, 'CA'),
+      RC = self:getStringOrStream(annot, 'RC'),
+      CreationDate = self:getString(annot, 'CreationDate'),
       IRT = self:formatIRT(annot, objnum),
-      Subj = self:formatString(annot, 'Subj'),
-      RT = self:formatName(annot, 'RT'),
-      IT = self:formatName(annot, 'IT'),
+      Subj = self:getString(annot, 'Subj'),
+      RT = self:getName(annot, 'RT'),
+      IT = self:getName(annot, 'IT'),
       ExData = self:getDictionary(annot, 'ExData'),
    }
 end
@@ -140,9 +140,9 @@ end
 
 --- Formats the value of a `/P` entry, eg: `4 0 R`
 -- @return Formatted string
-function Page:formatP()
+function Page:getP()
    -- Does it make sense to provide user input for /P at all?
-   local user = self:formatUserInput('P')
+   local user = self:getUserInput('P')
    if type(user) == 'string' then
       return user
    else
@@ -178,9 +178,9 @@ function Page:formatIRT(annot, objnum)
 end
 
 
---- Formats a `Square` annotation dictionary
+--- Returns a `Square` annotation dictionary.
 -- @pdfe annot annotation dictionary
--- @return Formatted string
+-- @return Table
 function Page:getAnnotSquare(annot)
    local t = {
       BS = self:getDictionary(annot, 'BS'),
@@ -194,23 +194,23 @@ function Page:getAnnotSquare(annot)
 end
 
 
---- Formats a `Circle` annotation dictionary
+--- Returns a `Circle` annotation dictionary.
 -- @pdfe annot annotation dictionary
--- @return Formatted string
+-- @return Table
 function Page:getAnnotCircle(annot)
    return self:getAnnotSquare(annot)
 end
 
 
---- Formats a `Text` annotation dictionary.
+--- Returns a a `Text` annotation dictionary.
 -- @pdfe annot annotation dictionary
--- @return Formatted string
+-- @return Table
 function Page:getAnnotText(annot)
    local t = {
-      Open = self:formatBoolean(annot, 'Open'),
-      Name = self:formatName(annot, 'Name'),
-      State = self:formatString(annot, 'State'),
-      StateModel = self:formatString(annot, 'StateModel'),
+      Open = self:getBoolean(annot, 'Open'),
+      Name = self:getName(annot, 'Name'),
+      State = self:getString(annot, 'State'),
+      StateModel = self:getString(annot, 'StateModel'),
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
@@ -218,10 +218,10 @@ function Page:getAnnotText(annot)
 end
 
 
---- Formats an array of coordinates, eg. `QuadPoints`.
+--- Return an array of coordinates, eg. `QuadPoints`.
 -- @pdfe annot annotation dictionary
 -- @string key key
--- @return Formatted string
+-- @return Table
 function Page:getCoordinatesArray(annot, key)
    if annot[key] then
       local ctm = self:readFromCache('ctm')
@@ -244,9 +244,9 @@ function Page:getCoordinatesArray(annot, key)
 end
 
 
---- Formats a `Text Markup` annotion dictionary.
+--- Returns a `Text Markup` annotion dictionary.
 -- @pdfe annot annotation dictionary.
--- @return Formatted string.
+-- @return Table
 function Page:getAnnotTextMarkup(annot)
    local t = {
       QuadPoints = self:getCoordinatesArray(annot, 'QuadPoints')
@@ -257,6 +257,32 @@ function Page:getAnnotTextMarkup(annot)
 end
 
 
+--- Returns a `FreeText` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
+function Page:getAnnotFreeText(annot)
+   local t = {
+      DA = self:getString(annot, 'DA'),
+      Q = self:getInteger(annot, 'Q'),
+      RC = self:getStringOrStream(annot, 'RC'),
+      DS = self:getString(annot, 'DS'),
+      CL = self:getCoordinatesArray(annot, 'CL'),
+      IT = self:getName(annot, 'IT'),
+      BE = self:getDictionary(annot, 'BE'),
+      RD = self:getAnnotFreeText_RD(annot, 'RD'),
+      BS = self:getDictionary(annot, 'BS'),
+      LE = self:getDictionary(annot, 'LE'),
+   }
+   self:appendTable(t, self:getAnnotCommonEntries(annot))
+   self:appendTable(t, self:getAnnotMarkupEntries(annot))
+   return t
+end
+
+
+--- Returns the `RD` rectangle of a `FreeText` annotation.
+-- @pdfe obj dictionary
+-- @string key key
+-- @return Table
 function Page:getAnnotFreeText_RD(obj, key)
    local array = obj[key]
    if not array then
@@ -272,30 +298,15 @@ function Page:getAnnotFreeText_RD(obj, key)
    return t
 end
 
-function Page:getAnnotFreeText(annot)
-   local t = {
-      DA = self:formatString(annot, 'DA'),
-      Q = self:formatInteger(annot, 'Q'),
-      RC = self:formatStringOrStream(annot, 'RC'),
-      DS = self:formatString(annot, 'DS'),
-      CL = self:getCoordinatesArray(annot, 'CL'),
-      IT = self:formatName(annot, 'IT'),
-      BE = self:getDictionary(annot, 'BE'),
-      RD = self:getAnnotFreeText_RD(annot, 'RD'),
-      BS = self:getDictionary(annot, 'BS'),
-      LE = self:getDictionary(annot, 'LE'),
-   }
-   self:appendTable(t, self:getAnnotCommonEntries(annot))
-   self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
-end
 
-
+--- Returns a `Link` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
 function Page:getAnnotLink(annot)
    local t = {
       A = self:getAction(annot['A']),
       -- Dest
-      H = self:formatName(annot, 'H'),
+      H = self:getName(annot, 'H'),
       PA = self:getDictionary(annot, 'PA'),
       QuadPoints = self:getCoordinatesArray(annot, 'QuadPoints'),
    }
@@ -304,21 +315,24 @@ function Page:getAnnotLink(annot)
 end
 
 
+--- Returns a `Line` annotation dicationary.
+-- @pdfe annot annotation dictionary
+-- @return Table
 function Page:getAnnotLine(annot)
    local t = {
       L = self:getCoordinatesArray(annot, 'L'),
       BS = self:getDictionary(annot, 'BS'),
       LE = self:getArray(annot, 'LE'),
       IC = self:getArray(annot, 'IC'),
-      LL = self:formatNumberScaled(annot, 'LL', true),
-      LLE = self:formatNumberScaled(annot, 'LLE', true),
-      Cap = self:formatBoolean(annot, 'Cap'),
-      IT = self:formatName(annot, 'IT'),
-      LLO = self:formatNumberScaled(annot, 'LLO', true),
-      CP = self:formatName(annot, 'CP'),
+      LL = self:getNumber(annot, 'LL', true),
+      LLE = self:getNumber(annot, 'LLE', true),
+      Cap = self:getBoolean(annot, 'Cap'),
+      IT = self:getName(annot, 'IT'),
+      LLO = self:getNumber(annot, 'LLO', true),
+      CP = self:getName(annot, 'CP'),
       -- TODO: Measure dictionary must be adjusted by the scaling factor
       Measure = self:getDictionary(annot, 'Measure'),
-      CO = self:getArrayScaled(annot, 'CO', true),
+      CO = self:getArray(annot, 'CO', true),
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
@@ -326,35 +340,185 @@ function Page:getAnnotLine(annot)
 end
 
 
---- Formats a `Highlight` annotation dictionary
+--- Returns a `Highlight` annotation dictionary.
 -- @pdfe annot annotation dictionary.
--- @return Formatted string.
+-- @return Table
 function Page:getAnnotHighlight(annot)
    return self:getAnnotTextMarkup(annot)
 end
 
 
---- Formats an `Underline` annotation dictionary.
+--- Returns an `Underline` annotation dictionary.
 -- @pdfe annot annotation dictionary
--- @return Formatted string
+-- @return Table
 function Page:getAnnotUnderline(annot)
    return self:getAnnotTextMarkup(annot)
 end
 
 
---- Formats an `StrikeOut` annotation dictionary.
+--- Returns a `StrikeOut` annotation dictionary.
 -- @pdfe annot annotation dictionary
--- @return Formatted string
+-- @return Table
 function Page:getAnnotStrikeOut(annot)
    return self:getAnnotTextMarkup(annot)
 end
 
 
---- Formats an `Squiggly` annotation dictionary.
+--- Returns a `Squiggly` annotation dictionary.
 -- @pdfe annot annotation dictionary
--- @return Formatted string
+-- @return Table
 function Page:getAnnotSquiggly(annot)
    return self:getAnnotTextMarkup(annot)
+end
+
+
+--- Returns a `FileAttachment` annotation table.
+-- @pdfe annot annotation dictionary
+-- @return Table.
+function Page:getAnnotFileAttachment(annot)
+   local t = {
+      FS = self:getFileSpecification(annot, 'FS'),
+      Name = self:getName(annot, 'Name'),
+   }
+   self:appendTable(t, self:getAnnotCommonEntries(annot))
+   self:appendTable(t, self:getAnnotMarkupEntries(annot))
+   return t
+end
+
+
+--- Returns an `FS` (file specification) dicationary.
+-- @pdfe dict dictionary
+-- @string key key
+-- @return Table
+function Page:getFileSpecification(dict, key)
+   -- file spec string
+   local str = pdfe.getstring(dict, key)
+   if str then
+      return str
+   end
+   -- file spec dictionary
+   local dict = pdfe.getdictionary(dict, key)
+   local t = {
+      Type = '/Filespec',
+      FS = self:getName(dict, 'FS'),
+      F = self:getString(dict, 'F'),
+      UF = self:getString(dict, 'UF'),
+      DOS = self:getString(dict, 'DOS'),
+      Mac = self:getString(dict, 'Mac'),
+      Unix = self:getString(dict, 'Unix'),
+      ID = self:getArray(dict, 'ID'),
+      V = self:getBoolean(dict, 'V'),
+      EF = self:getEmbeddedFileDict(dict, 'EF'),
+      RF = self:getRelatedFileDict(dict, 'RF'),
+      Desc = self:getString(dict, 'Desc'),
+      CI = self:getDictionary(dict, 'CI'),
+   }
+   return t
+end
+
+
+--- Returns an `EF` (embedded file) dicionary
+-- @pdfe dict dictionary
+-- @string key key
+-- @return Table
+function Page:getEmbeddedFileDict(dict, key)
+   dict = pdfe.getdictionary(dict, key)
+   if dict == nil then
+      return nil
+   end
+   local t = {
+      F = self:getEmbeddedFileStreamDict(dict, 'F'),
+      UF = self:getEmbeddedFileStreamDict(dict, 'UF'),
+      DOS = self:getEmbeddedFileStreamDict(dict, 'DOS'),
+      Mac= self:getEmbeddedFileStreamDict(dict, 'Mac'),
+      Unix = self:getEmbeddedFileStreamDict(dict, 'Unix'),
+   }
+   return t
+end
+
+
+--- Returns an embedded file stream dictionary.
+-- @pdfe dict dictionary
+-- @string key key
+-- @return Table
+function Page:getEmbeddedFileStreamDict(dict, key)
+   if pdfe.type(dict[key]) == 'pdfe.stream' then
+      -- TODO: do not return an arbitrary stream, but a stream
+      -- with the special stream dictionary of Page:getEmbeddedFileParams()
+      return self:getStream(dict, key)
+   else
+      return nil
+   end
+end
+
+
+--- Returns an embedded file parameter dictionary.
+-- @pdfe dict dictionary
+-- @string key key
+-- @return table
+function Page:getEmbeddedFileParams(dict, key)
+   dict = pdfe.getdictionary(dict, key)
+   if dict == nil then
+      return nil
+   end
+   local t = {
+      Size = self:getInteger(dict, 'Size'),
+      CreationDate = self:getString(dict, 'CreationDate'),
+      ModDate = self:getString(dict, 'ModDate'),
+      Mac = self:getMacFileInfo(dict, 'Mac'),
+      CheckSum = self:getString(dict, 'CheckSum'),
+   }
+   return t
+end
+
+
+--- Returns a Mac file info dictionary.
+-- @pdfe dict dictionary
+-- @string key key
+-- @return Table
+function Page:getMacFileInfo(dict, key)
+   dict = pdfe.getdictionary(dict, key)
+   if dict == nil then
+      return nil
+   end
+   local t = {
+      Subtype = self:getInteger(dict, 'Subtype'),
+      Creator = self:getInteger(dict, 'Creator'),
+      ResFork = self:getStream(dict, 'ResFork'),
+   }
+   return t
+end
+
+
+--- Returns an `RF` (related files) dictionary.
+-- @pdfe dict dictionary
+-- @string key key
+-- @return Table
+function Page:getRelatedFileDict(dict, key)
+   dict = pdfe.getdictionary(dict, key)
+   if dict == nil then
+      return nil
+   end
+   local t = {
+      F = self:getRelatedFileArray(dict['F']),
+      UF = self:getRelatedFileArray(dict['UF']),
+      DOS = self:getRelatedFileArray(dict['DOS']),
+      Mac= self:getRelatedFileArray(dict['Mac']),
+      Unix = self:getRelatedFileArray(dict['Unix']),
+   }
+   return t
+end
+
+
+--- Returns a file array (an entry of an `RF` dictionary).
+-- @pdfe array array
+-- @return table
+function Page:getRelatedFileArray(array)
+   local t = types.pdfarray:new()
+   for idx = 1, #array, 2 do
+      t[#t + 1] = self:getString(array, idx)
+      t[#t + 1] = self:getStream(array, idx + 1)
+   end
 end
 
 
@@ -364,7 +528,7 @@ end
 -- @return Formatted string
 function Page:formatBorder(annot, scale)
    scale = scale or false
-   local user = self:formatUserInput('Border')
+   local user = self:getUserInput('Border')
    if type(user) == 'string' then
       return user
    end
@@ -404,7 +568,7 @@ end
 -- @numbool scale scaling factor
 -- @return Formated string
 function Page:formatBorderDash(dash, scale)
-   local user = self:formatUserInput('BorderDash')
+   local user = self:getUserInput('BorderDash')
    if type(user) == 'string' then
       return user
    end
@@ -419,45 +583,6 @@ function Page:formatBorderDash(dash, scale)
                            self:scaleNumber(val2, scale))
    else
       return ''
-   end
-end
-
-
---- Scales value `val`.
--- If `scale` is a number it acts as a scaling factor. If it is
--- `true` then the scaling factor of the page (image) is used
--- for scaling. If it is `false` no scaling is applied.
--- @numbool val Value
--- @number scale Scaling factor
--- @return Scaled value
-function Page:scaleNumber(val, scale)
-   if tonumber(scale) then
-      return val * scale
-   elseif scale == true then
-      return val * 0.5 * (self.ctm.a + self.ctm.d)
-   else
-      return val
-   end
-end
-
-
---- Scales and formats a number.
--- @pdfe obj pdfe dictionary or array
--- @keyidx key key or index (one-based)
--- @number scale scaling factor
--- @return Formatted string.
-function Page:formatNumberScaled(obj, key, scale)
-   local user = self:formatUserInput(key)
-   if type(user) == 'string' then
-      return user
-   else
-      key = self:zero_based_indexing(obj, key)
-      local val = pdfe.getnumber(obj, key)
-      if val then
-         return string.format('%.5g', self:scaleNumber(val, scale))
-      else
-         return nil
-      end
    end
 end
 

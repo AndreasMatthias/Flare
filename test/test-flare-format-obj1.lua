@@ -114,62 +114,6 @@ test('Page:zero_based_indexing()',
 end)
 
 
-test('Page:formatUserInput()',
-     function()
-        local p = Page:new(Doc:new())
-        p.GinKV.page, p.annotId = 2, 3
-
-        p.FlareKV = {}
-        local user = p:formatUserInput('Foo')
-        assert.is_nil(user)
-
-        p.FlareKV = {}
-        p:setFlareKV(2, 3, 'Foo', 'remove', true)
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '')
-
-        p.FlareKV = {}
-        p:setFlareKV(2, 3, 'Foo', 'remove', false)
-        local user = p:formatUserInput('Foo')
-        assert.is_nil(user)
-
-        p.FlareKV = {}
-        p:setFlareKV('all', 3, 'Foo', 'remove', true)
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '')
-
-        p.FlareKV = {}
-        p:setFlareKV(2, 'all', 'Foo', 'remove', true)
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '')
-
-        p.FlareKV = {}
-        p:setFlareKV('all', 'all', 'Foo', 'remove', true)
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '')
-
-        p.FlareKV = {}
-        p:setFlareKV(2, 3, 'Foo', 'replace', '[1 2 3]')
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '[1 2 3]')
-
-        p.FlareKV = {}
-        p:setFlareKV('all', 3, 'Foo', 'replace', '[1 2 3]')
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '[1 2 3]')
-
-        p.FlareKV = {}
-        p:setFlareKV(2, 'all', 'Foo', 'replace', '[1 2 3]')
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '[1 2 3]')
-
-        p.FlareKV = {}
-        p:setFlareKV('all', 'all', 'Foo', 'replace', '[1 2 3]')
-        local user = p:formatUserInput('Foo')
-        assert.same(user, '[1 2 3]')
-end)
-
-
 test('Page:getUserInput()',
      function()
         local p = Page:new(Doc:new())
@@ -180,28 +124,49 @@ test('Page:getUserInput()',
         assert.is_nil(user)
 
         p.FlareKV = {}
-        p:setFlareKV(2, 3, 'Foo', 'replace', 'xxx')
-        local user =  p:getUserInput('Foo')
-        assert.is_not_nil(user)
-        assert.same('replace', user.op)
-        assert.same('xxx', user.val)
-
-        p:setFlareKV('all', 3, 'Foo', 'replace', 'xxx')
-        local user =  p:getUserInput('Foo')
-        assert.is_not_nil(user)
-        assert.same('replace', user.op)
-        assert.same('xxx', user.val)
-
-        p:setFlareKV(2, 'all', 'Foo', 'replace', 'xxx')
-        assert.is_not_nil(user)
-        assert.same('replace', user.op)
-        assert.same('xxx', user.val)
-
-        p:setFlareKV('all', 'all', 'Foo', 'replace', 'xxx')
+        p:setFlareKV(2, 3, 'Foo', 'remove', true)
         local user = p:getUserInput('Foo')
-        assert.is_not_nil(user)
-        assert.same('replace', user.op)
-        assert.same('xxx', user.val)
+        assert.same(user, '')
+
+        p.FlareKV = {}
+        p:setFlareKV(2, 3, 'Foo', 'remove', false)
+        local user = p:getUserInput('Foo')
+        assert.is_nil(user)
+
+        p.FlareKV = {}
+        p:setFlareKV('all', 3, 'Foo', 'remove', true)
+        local user = p:getUserInput('Foo')
+        assert.same(user, '')
+
+        p.FlareKV = {}
+        p:setFlareKV(2, 'all', 'Foo', 'remove', true)
+        local user = p:getUserInput('Foo')
+        assert.same(user, '')
+
+        p.FlareKV = {}
+        p:setFlareKV('all', 'all', 'Foo', 'remove', true)
+        local user = p:getUserInput('Foo')
+        assert.same(user, '')
+
+        p.FlareKV = {}
+        p:setFlareKV(2, 3, 'Foo', 'replace', '[1 2 3]')
+        local user = p:getUserInput('Foo')
+        assert.same(user, '[1 2 3]')
+
+        p.FlareKV = {}
+        p:setFlareKV('all', 3, 'Foo', 'replace', '[1 2 3]')
+        local user = p:getUserInput('Foo')
+        assert.same(user, '[1 2 3]')
+
+        p.FlareKV = {}
+        p:setFlareKV(2, 'all', 'Foo', 'replace', '[1 2 3]')
+        local user = p:getUserInput('Foo')
+        assert.same(user, '[1 2 3]')
+
+        p.FlareKV = {}
+        p:setFlareKV('all', 'all', 'Foo', 'replace', '[1 2 3]')
+        local user = p:getUserInput('Foo')
+        assert.same(user, '[1 2 3]')
 end)
 
 
@@ -240,99 +205,101 @@ test('Page:checkUserInput()',
 end)
 
 
-test('Page:formatBoolean()',
+test('Page:getBoolean()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
-        assert.same('true', p:formatBoolean(pageDict, 'TestBoolean'))
+        assert.same(true, p:getBoolean(pageDict, 'TestBoolean'))
 
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestBoolean', 'replace', 'false')
-        assert.same('false', p:formatBoolean(pageDict, 'TestBoolean'))
+        assert.same('false', p:getBoolean(pageDict, 'TestBoolean'))
 end)
 
 
-test('Page:formatInteger()',
+test('Page:getInteger()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
-        assert.same('4',
-                        p:formatInteger(pageDict, 'TestInteger'))
-
+        assert.same(4, p:getInteger(pageDict, 'TestInteger'))
+        assert.same(8, p:getInteger(pageDict, 'TestInteger', 2))
+        p.ctm = p:makeCTM(3, 0, 0, 3, 0, 0)
+        assert.same(12, p:getInteger(pageDict, 'TestInteger', true))
+        
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestInteger', 'replace', '99')
-        assert.same('99', p:formatInteger(pageDict, 'TestInteger'))
+        assert.same('99', p:getInteger(pageDict, 'TestInteger'))
 end)
 
 
-test('Page:formatNumber()',
+test('Page:getNumber()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
-        assert.same('1.23',
-                        p:formatNumber(pageDict, 'TestNumber'))
+        assert.same(1.23, p:getNumber(pageDict, 'TestNumber'))
+        assert.same(2.46, p:getNumber(pageDict, 'TestNumber', 2))
+        p.ctm = p:makeCTM(3, 0, 0, 3, 0, 0)
+        assert.same(3.69, p:getNumber(pageDict, 'TestNumber', true))
 
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestNumber', 'replace', '7.89')
-        assert.same('7.89', p:formatNumber(pageDict, 'TestNumber'))
+        assert.same('7.89', p:getNumber(pageDict, 'TestNumber'))
 end)
 
 
-test('Page:formatName()',
+test('Page:getName()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
-        assert.same('/Foo',
-                        p:formatName(pageDict, 'TestName'))
+        assert.same('/Foo', p:getName(pageDict, 'TestName'))
 
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestName', 'replace', '/Bar')
-        assert.same('/Bar', p:formatName(pageDict, 'TestName'))
+        assert.same('/Bar', p:getName(pageDict, 'TestName'))
 end)
 
 
-test('Page:formatString()',
+test('Page:getString()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
-        assert.same('(foo)',
-                        p:formatString(pageDict, 'TestString'))
+        assert.same('(foo)', p:getString(pageDict, 'TestString'))
 
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestString', 'replace', '(testing)')
-        assert.same('(testing)', p:formatString(pageDict, 'TestString'))
+        assert.same('(testing)', p:getString(pageDict, 'TestString'))
 end)
 
 
-test('Page:formatString()',
+test('Page:getString()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
         assert.same('<FEFF0066006F006F>',
-                        p:formatString(pageDict, 'TestStringHex'))
+                    p:getString(pageDict, 'TestStringHex'))
 
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestString', 'replace', '<FEFF006200610072>')
         assert.same('<FEFF006200610072>',
-                        p:formatString(pageDict, 'TestString'))
+                    p:getString(pageDict, 'TestString'))
 end)
 
 
@@ -340,17 +307,24 @@ test('Page:getArray()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
-
+        p.ctm = p:makeCTM(0.5, 0, 0, 0.5, 0, 0)
+        
         -- copy from pdf
-        x = p:getArray(pageDict, 'TestArray')
-
         assert.same(
-           {'1', '2', '3'},
+           {1, 2, 3},
            p:getArray(pageDict, 'TestArray'))
 
         assert.same(
-           {'true', '4', '1.23', '/Foo', '(foo)', '<FEFF0066006F006F>',
-            {'1', '2', '3'}, {AAA = '1', BBB = '2'}},
+           {2, 4, 6},
+           p:getArray(pageDict, 'TestArray', 2))
+
+        assert.same(
+           {0.5, 1, 1.5},
+           p:getArray(pageDict, 'TestArray', true))
+
+        assert.same(
+           {true, 4, 1.23, '/Foo', '(foo)', '<FEFF0066006F006F>',
+            {1, 2, 3}, {AAA = 1, BBB = 2}},
            p:getArray(pageDict, 'TestArray2'))
 
         -- user input
@@ -370,7 +344,7 @@ test('Page:getDictionary()',
 
         -- copy from pdf
         assert.same(
-           {AAA = '1', BBB = '(test)'},
+           {AAA = 1, BBB = '(test)'},
            p:getDictionary(pageDict, 'TestDictionary'))
 
         -- user input
@@ -390,18 +364,18 @@ test('Page:getDictionary2()',
 
         -- copy from pdf
         assert.same(
-           {AAA = '1', BBB = '(test)'},
+           {AAA = 1, BBB = '(test)'},
            p:getDictionary2(pageDict['TestDictionary']))
 end)
 
 
-test('Page:formatStream()',
+test('Page:getStream()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- copy from pdf
-        local str = p:formatStream(pageDict, 'TestStream')
+        local str = p:getStream(pageDict, 'TestStream')
         assert.is_pdf_ref(str)
 
         -- user input
@@ -410,17 +384,17 @@ test('Page:formatStream()',
         p:setFlareKV(2, 3, 'TestStream', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatStream(pageDict, 'TestStream'))
+           p:getStream(pageDict, 'TestStream'))
 end)
 
 
-test('Page:formatReference()',
+test('Page:getReference()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
         -- boolean: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefBoolean')
+        local str = p:getReference(pageDict, 'TestRefBoolean')
         assert.is_pdf_ref(str)
 
         -- boolean: user input
@@ -429,10 +403,10 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefBoolean', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefBoolean'))
+           p:getReference(pageDict, 'TestRefBoolean'))
 
         -- integer: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefInteger')
+        local str = p:getReference(pageDict, 'TestRefInteger')
         assert.is_pdf_ref(str)
 
         -- integer: user input
@@ -441,10 +415,10 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefInteger', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefInteger'))
+           p:getReference(pageDict, 'TestRefInteger'))
 
         -- number: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefNumber')
+        local str = p:getReference(pageDict, 'TestRefNumber')
         assert.is_pdf_ref(str)
 
         -- number: user input
@@ -453,10 +427,10 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefNumber', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefNumber'))
+           p:getReference(pageDict, 'TestRefNumber'))
 
         -- name: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefName')
+        local str = p:getReference(pageDict, 'TestRefName')
         assert.is_pdf_ref(str)
 
         -- name: user input
@@ -465,10 +439,10 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefName', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefName'))
+           p:getReference(pageDict, 'TestRefName'))
 
         -- string: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefString')
+        local str = p:getReference(pageDict, 'TestRefString')
         assert.is_pdf_ref(str)
 
         -- string: user input
@@ -477,10 +451,10 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefString', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefString'))
+           p:getReference(pageDict, 'TestRefString'))
 
         -- array: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefArray')
+        local str = p:getReference(pageDict, 'TestRefArray')
         assert.is_pdf_ref(str)
 
         -- array: user input
@@ -489,10 +463,10 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefArray', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefArray'))
+           p:getReference(pageDict, 'TestRefArray'))
 
         -- dictionary: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefDictionary')
+        local str = p:getReference(pageDict, 'TestRefDictionary')
         assert.is_pdf_ref(str)
 
         -- dictionary: user input
@@ -501,11 +475,11 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefDictionary', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefDictionary'))
+           p:getReference(pageDict, 'TestRefDictionary'))
 
 
         -- stream: copy from pdf
-        local str = p:formatReference(pageDict, 'TestRefStream')
+        local str = p:getReference(pageDict, 'TestRefStream')
         assert.is_pdf_ref(str)
 
         -- stream: user input
@@ -514,11 +488,11 @@ test('Page:formatReference()',
         p:setFlareKV(2, 3, 'TestRefStream', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatReference(pageDict, 'TestRefStream'))
+           p:getReference(pageDict, 'TestRefStream'))
 end)
 
 
-test('Page:formatStringOrStream()',
+test('Page:getStringOrStream()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
@@ -526,17 +500,17 @@ test('Page:formatStringOrStream()',
         -- string: copy from pdf
         assert.same(
            '(foo)',
-           p:formatStringOrStream(pageDict, 'TestString'))
+           p:getStringOrStream(pageDict, 'TestString'))
 
         -- string: user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestString', 'replace', '(bar)')
         assert.same(
            '(bar)',
-           p:formatStringOrStream(pageDict, 'TestString'))
+           p:getStringOrStream(pageDict, 'TestString'))
 
         -- stream: copy from pdf
-        local str = p:formatStringOrStream(pageDict, 'TestStream')
+        local str = p:getStringOrStream(pageDict, 'TestStream')
         assert.is_pdf_ref(str)
 
         -- stream: user input
@@ -545,16 +519,16 @@ test('Page:formatStringOrStream()',
         p:setFlareKV(2, 3, 'TestStream', 'ref', n)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatStringOrStream(pageDict, 'TestStream'))
+           p:getStringOrStream(pageDict, 'TestStream'))
 end)
 
 
-test('Page:formatP()',
+test('Page:getP()',
      function()
         local p = Page:new(Doc:new())
 
         -- new reference
-        local str = p:formatP()
+        local str = p:getP()
         assert.is.not_nil(str:find('^%d+ 0 R$'))
 
         -- user input
@@ -564,52 +538,35 @@ test('Page:formatP()',
         p:setFlareKV(2, 3, 'P', 'replace', user)
         assert.same(
            string.format('%d 0 R', n),
-           p:formatP())
+           p:getP())
 end)
 
 
-test('Page:getfromobj()',
+test('Page:getObj()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
 
-        local ptype, pval, pdetail = p:getfromobj(pageDict['TestDictionary'], 'AAA')
-        assert.same(3, ptype)
-        assert.same(1, pval)
-        assert.same(nil, pdetail)
-
-        local ptype, pval, pdetail = p:getfromobj(pageDict['TestArray'], 2)
-        assert.same(3, ptype)
-        assert.same(2, pval)
-        assert.same(nil, pdetail)
-end)
-
-
-test('Page:formatObj()',
-     function()
-        local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
-        local p = Page:new(Doc:new())
-
-        assert.same('true', p:formatObj(pageDict, 'TestBoolean'))
-        assert.same('4', p:formatObj(pageDict, 'TestInteger'))
-        assert.same('1.23', p:formatObj(pageDict, 'TestNumber'))
-        assert.same('/Foo', p:formatObj(pageDict, 'TestName'))
-        assert.same('(foo)', p:formatObj(pageDict, 'TestString'))
+        assert.same(true, p:getObj(pageDict, 'TestBoolean'))
+        assert.same(4, p:getObj(pageDict, 'TestInteger'))
+        assert.same(1.23, p:getObj(pageDict, 'TestNumber'))
+        assert.same('/Foo', p:getObj(pageDict, 'TestName'))
+        assert.same('(foo)', p:getObj(pageDict, 'TestString'))
         assert.same(
-           {'1', '2', '3'},
-           p:formatObj(pageDict, 'TestArray'))
+           {1, 2, 3},
+           p:getObj(pageDict, 'TestArray'))
         -- dictionary
         assert.same(
-           {AAA = '1', BBB = '(test)'},
-           p:formatObj(pageDict, 'TestDictionary'))
+           {AAA = 1, BBB = '(test)'},
+           p:getObj(pageDict, 'TestDictionary'))
         -- stream
-        local str = p:formatObj(pageDict, 'TestStream')
+        local str = p:getObj(pageDict, 'TestStream')
         assert.is_pdf_ref(str)
         -- reference
-        local str = p:formatObj(pageDict, 'TestRefInteger')
+        local str = p:getObj(pageDict, 'TestRefInteger')
         assert.is_pdf_ref(str)
         -- invalid reference
-        assert.same('', p:formatObj(pageDict, 'TestRefInvalide'))
+        assert.same('', p:getObj(pageDict, 'TestRefInvalide'))
 end)
 
 

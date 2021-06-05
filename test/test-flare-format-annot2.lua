@@ -50,7 +50,7 @@ test('Page:getAnnotText()',
         local annot = p:getAnnots()[1]
         local t = p:getAnnotText(annot)
         assert.same('/Text', t.Subtype)
-        assert.same('true', t.Open)
+        assert.same(true, t.Open)
         assert.same('/Help', t.Name)
 
         
@@ -103,7 +103,7 @@ test('Page:getAnnotCircle()',
         local annot = p:getAnnots()[1]
         local t = p:getAnnotCircle(annot)
         assert.same('/Circle', t.Subtype)
-        assert.same({'0.9', '0.9', '0.1'}, t.IC)
+        assert.same({0.9, 0.9, 0.1}, t.IC)
 
         -- circle with BS dict
         local p = Page:new(d)
@@ -113,8 +113,8 @@ test('Page:getAnnotCircle()',
         local annot = p:getAnnots()[1]
         local t = p:getAnnotCircle(annot)
         assert.same('/Circle', t.Subtype)
-        assert.same({'0.9', '0.9', '0.1'}, t.IC)
-        assert.same({Type = '/Border', W = '8', S = '/D', D = {'10', '4'}}, t.BS)
+        assert.same({0.9, 0.9, 0.1}, t.IC)
+        assert.same({Type = '/Border', W = 8, S = '/D', D = {10, 4}}, t.BS)
 
         -- circle with BS and BE dict
         local p = Page:new(d)
@@ -124,9 +124,9 @@ test('Page:getAnnotCircle()',
         local annot = p:getAnnots()[1]
         local t = p:getAnnotCircle(annot)
         assert.same('/Circle', t.Subtype)
-        assert.same({'0.9', '0.9', '0.1'}, t.IC)
-        assert.same({Type = '/Border', W = '8', S = '/D', D = {'10', '4'}}, t.BS)
-        assert.same({S = '/C', I = '1'}, t.BE)
+        assert.same({0.9, 0.9, 0.1}, t.IC)
+        assert.same({Type = '/Border', W = 8, S = '/D', D = {10, 4}}, t.BS)
+        assert.same({S = '/C', I = 1}, t.BE)
 end)
 
 
@@ -140,7 +140,7 @@ test('Page:getAnnotSquare()',
         local annot = p:getAnnots()[1]
         local t = p:getAnnotCircle(annot)
         assert.same('/Square', t.Subtype)
-        assert.same({'0.9', '0.9', '0.1'}, t.IC)
+        assert.same({0.9, 0.9, 0.1}, t.IC)
 end)
      
 
@@ -165,9 +165,9 @@ test('Page:getAnnotHighlight()',
         assert.same('<FEFF0061006E00640072006500610073>', t.T)
         assert.same('<FEFF>', t.Contents)
         assert.same('(okular-{1c0dc025-7938-4ccf-8aea-bedc2827469d})', t.NM)
-        assert.same('4', t.F)
-        assert.same({'0.96078', '0.47451', '0'}, t.C)
-        assert.same('1', t.CA)
+        assert.same(4, t.F)
+        assert.nearly_same({0.96078, 0.47451, 0}, t.C)
+        assert.same(1, t.CA)
         assert.same('[ 0 0 1 ]', t.Border)
 end)
 
