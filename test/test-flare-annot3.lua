@@ -357,6 +357,41 @@ test('Page:getAnnotStamp()',
 end)
 
 
+test('Page:getAnnotInk() #ok',
+     function()
+        local pdf_fn = createTestFile(
+           'ink',
+           '\\includegraphics[scale=0.5]{pdf/ink-01.pdf}')
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        assert.same('Annot', annot.Type)
+        assert.same('Ink', annot.Subtype)
+        assert.nearly_same(
+           {{221.32, 637.97, 224.69, 643.27, 229.98, 651.47,
+             233.91, 656.76, 237.75, 660.86, 241.67, 663.89,
+             246.70, 666.28, 252.29, 667.43, 258.61, 667.36,
+             265.77, 666.07, 271.62, 664.29, 276.23, 662.18,
+             279.54, 659.77, 281.53, 657.08, 282.36, 653.89,
+             282.05, 650.36, 280.59, 646.59, 278.15, 643.03,
+             275.92, 640.23, 271.77, 635.53, 269.20, 633.83,
+             266.34, 632.91, 262.31, 632.96, 257.35, 634.23,
+             252.61, 636.39, 248.98, 639.07, 247.15, 641.38,
+             246.42, 643.72, 246.82, 646.00, 248.34, 648.20,
+             249.46, 649.21, 249.82, 649.30, 250.57, 649.20,
+             251.32, 649.09, 251.71, 649.21}},
+           p:getObj(annot, 'InkList'))
+end)
+
+
 test('Page:getAnnotFileAttachment()',
      function()
         --

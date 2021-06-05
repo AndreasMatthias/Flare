@@ -77,7 +77,6 @@
 
 \AddToHook{begindocument}{
   \directlua{
-    print()
     doc = flare.Doc:new()
     doc:loadCache()
   }
@@ -85,7 +84,6 @@
 
 \AddToHook{enddocument/afterlastpage}{
   \directlua{
-    print()
     doc:saveCache()
     doc:warnIfCacheDirty()
   }
@@ -93,7 +91,6 @@
 
 \cs_new:Nn \FLR_CopyAnnotations: {
   \directlua{
-    print()
     page = flare.Page:new(doc)
     page:processKeyvals("{\clist_use:Nnnn \l_FLR_kv_clist {,} {,} {,}}")
     page:openFile()

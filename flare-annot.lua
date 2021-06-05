@@ -320,6 +320,35 @@ function Page:getCoordinatesArray(annot, key)
 end
 
 
+--- Return an array of array of coordinates, eg. `InkList`.
+-- @pdfe annot annotation dictionary
+-- @string key key
+-- @return Table
+function Page:getCoordinatesArrayArray(annot, key)
+   if annot[key] then
+      local ctm = self:readFromCache('ctm')
+      ctm = ctm or self.IdentityCTM
+
+      local t = types.pdfarray:new()
+      for _, coords in ipairs(annot[key]) do
+         local newcoords = types.pdfarray:new()
+         local idx = 1
+         while idx <= #coords do
+            local x, y = coords[idx], coords[idx + 1]
+            local xn, yn = self:applyCTM(ctm, x, y)
+            newcoords[#newcoords + 1] = xn
+            newcoords[#newcoords + 1] = yn
+            idx = idx + 2
+         end
+         t[#t + 1] = newcoords
+      end
+      return t
+   else
+      return nil
+   end
+end
+
+
 --- Returns a `Text Markup` annotion dictionary.
 -- @pdfe annot annotation dictionary.
 -- @return Table
@@ -481,6 +510,20 @@ end
 function Page:getAnnotStamp(annot)
    local t = {
       Name = self:getName(annot, 'Name'),
+   }
+   self:appendTable(t, self:getAnnotCommonEntries(annot))
+   self:appendTable(t, self:getAnnotMarkupEntries(annot))
+   return t
+end
+
+
+--- Returns an `Ink` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
+function Page:getAnnotInk(annot)
+   local t = {
+      InkList = self:getCoordinatesArrayArray(annot, 'InkList'),
+      BS = self:getBorderStyle(annot, 'BS'),
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))

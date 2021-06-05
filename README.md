@@ -41,6 +41,7 @@ Following annotations are implemented so far:
 - Line
 - Polygon, PolyLine
 - Stamp
+- Ink
 - FileAttachment
 
 ## Requirements
