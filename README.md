@@ -40,6 +40,7 @@ Following annotations are implemented so far:
 - Link
 - Line
 - Polygon, PolyLine
+- Stamp
 - FileAttachment
 
 ## Requirements

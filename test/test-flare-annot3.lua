@@ -335,6 +335,28 @@ test('Page:getAnnotPolyLine()',
 end)
 
 
+test('Page:getAnnotStamp()',
+     function()
+        local pdf_fn = createTestFile(
+           'stamp',
+           '\\includegraphics[scale=0.5]{pdf/stamp-01.pdf}')
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        assert.same('Annot', annot.Type)
+        assert.same('Stamp', annot.Subtype)
+        assert.same('Approved', annot.Name)
+end)
+
+
 test('Page:getAnnotFileAttachment()',
      function()
         --

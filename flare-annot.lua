@@ -448,6 +448,9 @@ function Page:getAnnotSquiggly(annot)
 end
 
 
+--- Returns a `Polygon` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
 function Page:getAnnotPolygon(annot)
    local t = {
       Vertices = self:getCoordinatesArray(annot, 'Vertices'),
@@ -464,9 +467,26 @@ function Page:getAnnotPolygon(annot)
 end
 
 
+--- Returns a `PolyLine` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
 function Page:getAnnotPolyLine(annot)
    return self:getAnnotPolygon(annot)
 end
+
+
+--- Returns a `Stamp` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
+function Page:getAnnotStamp(annot)
+   local t = {
+      Name = self:getName(annot, 'Name'),
+   }
+   self:appendTable(t, self:getAnnotCommonEntries(annot))
+   self:appendTable(t, self:getAnnotMarkupEntries(annot))
+   return t
+end
+
 
 --- Returns a `FileAttachment` annotation table.
 -- @pdfe annot annotation dictionary
