@@ -36,18 +36,17 @@ DIST-TEX-FILES= \
 	flare.sty
 
 DIST-LUA-FILES= \
-	flare-action.lua \
+	flare.lua \
+	flare-pkg.lua \
+	flare-types.lua \
+	flare-luatex.lua \
+	flare-doc.lua \
+	flare-page.lua \
+	flare-keyval.lua \
+	flare-obj.lua \
 	flare-annot.lua \
 	flare-dest.lua \
-	flare-doc.lua \
-	flare-format-annot.lua \
-	flare-format-obj.lua \
-	flare-keyval.lua \
-	flare.lua \
-	flare-luatex.lua \
-	flare-page.lua \
-	flare-pkg.lua \
-	flare-types.lua
+	flare-action.lua
 
 DIST-DOC-FILES= \
 	README.md

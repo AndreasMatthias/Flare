@@ -10,7 +10,7 @@
 -- version 2008 or later.
 --
 -- This work has the LPPL maintenance status `maintained'.
--- 
+--
 -- The Current Maintainer of this work is Andreas MATTHIAS.
 --
 
@@ -37,20 +37,123 @@ stringio = require('pl.stringio')
 nt = require('nodetree')
 require('helper')
 
-describe('Testing flare-format-annot.lua:', function()
+describe('Testing flare-annot.lua:', function()
+
+
+test('Page:getAnnots()',
+     function()
+        local d = Doc:new()
+        local p = Page:new(d)
+        p:setGinKV('filename', 'pdf/circle-01.pdf')
+        p:setGinKV('page', 1)
+        p:openFile()
+        local annots = p:getAnnots()
+        assert.same(1, #annots)
+        local pt, pv, pd = pdfe.getfromarray(annots, 1)
+        assert.same(10, pt)
+        assert.same('pdfe.reference', pdfe.type(pv))
+        assert.same(6, pd)
+end)
+
+end) -- describe
+
+
+describe('Testing flare-annot.lua:', function()
+
+
+before_each(function()
+      orig_node_write = _G.node.write
+      _G.flare_box = nil
+      _G.node.write = function(val) _G.flare_box = val end
+
+      orig_io_write = _G.io.write
+      _G.flare_stream = stringio.create()
+      _G.io.write = function(val) _G.flare_stream:write(val) end
+end)
+
+after_each(function()
+      _G.node.write = orig_node_write
+      _G.io.write = orig_io_write
+end)
+
+local function sanitize_node_str(str)
+   str = str:gsub(' objnum: %d+,', '')
+   str = str:gsub(', data: .*', '')
+   return str
+end
+
+
+test('Page:insertAnnot()',
+     function()
+        local d = Doc:new()
+        local p = Page:new(d)
+        p:setGinKV('filename', 'pdf/circle-01.pdf')
+        p:setGinKV('page', 1)
+        p:openFile()
+        local annot = pdfe.getpage(p.pdf, 1).Annots[1]
+        p.annotId = 1
+        p:insertAnnot(annot)
+
+        local nt = require('nodetree')
+        nt.print(_G.flare_box,
+                 {verbosity=0, color='no', unit='bp', decimalplaces=0})
+
+        assert.same('\n' ..
+                    '└─VLIST \n' ..
+                    '  ╚═head:\n' ..
+                    '    ├─GLUE width: -600bp\n' ..
+                    '    └─HLIST \n' ..
+                    '      ╚═head:\n' ..
+                    '        ├─GLUE width: 100bp\n' ..
+                    '        └─WHATSIT subtype: pdf_annot, width: 200bp, height: 100bp',
+                    sanitize_node_str(_G.flare_stream:value()))
+end)
+
+
+test('Page:copyAnnots()',
+     function()
+        local d = Doc:new()
+        local p = Page:new(d)
+        p:setGinKV('filename', 'pdf/circle-01.pdf')
+        p:setGinKV('page', 1)
+        p:openFile()
+        p:copyAnnots()
+
+        local nt = require('nodetree')
+        nt.print(_G.flare_box,
+                 {verbosity=0, color='no', unit='bp', decimalplaces=0})
+
+        assert.same('\n' ..
+                    '└─VLIST \n' ..
+                    '  ╚═head:\n' ..
+                    '    ├─GLUE width: -600bp\n' ..
+                    '    └─HLIST \n' ..
+                    '      ╚═head:\n' ..
+                    '        ├─GLUE width: 100bp\n' ..
+                    '        └─WHATSIT subtype: pdf_annot, width: 200bp, height: 100bp',
+                    sanitize_node_str(_G.flare_stream:value()))
+
+end)
+
+end) -- describe
+
+
+describe('Testing flare-annot.lua:', function()
+
 
 test('Page:formatAnnotation()',
      function()
         local d = Doc:new()
         local p = Page:new(d)
         stub(pkg, 'warning')
-        
+
         p:formatAnnotation({Subtype = 'DoesNotExist'})
         assert.stub(pkg.warning).was_called()
 
         -- TODO: further tests needed
 end)
-            
+
+
 test('Page:getAnnotFunc()',
      function()
         local d = Doc:new()
@@ -63,7 +166,7 @@ test('Page:getAnnotFunc()',
         assert.same(nil, p:getAnnotFunc({Subtype = 'doesNotExist'}))
 end)
 
-            
+
 test('Page:getAnnotCommonEntries()',
      function()
         local p = Page:new(Doc:new())
@@ -239,7 +342,7 @@ test('Page:appendTable()',
         p:appendTable(t1, t2)
         assert.same({}, t1)
         assert.same({}, t2)
-        
+
         t1 = {}
         t2 = {a=1, b=2}
         p:appendTable(t1, t2)

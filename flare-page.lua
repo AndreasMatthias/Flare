@@ -28,8 +28,7 @@ local function require_sub(mod, name)
 end
 
 require_sub(Page, 'flare-keyval')
-require_sub(Page, 'flare-format-obj')
-require_sub(Page, 'flare-format-annot')
+require_sub(Page, 'flare-obj')
 require_sub(Page, 'flare-annot')
 require_sub(Page, 'flare-dest')
 require_sub(Page, 'flare-action')

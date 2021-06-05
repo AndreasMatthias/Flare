@@ -3,30 +3,29 @@ TEST_FILES = \
 	test-flare-types.lua \
 	test-flare-doc.lua \
 	test-flare-page.lua \
-	test-flare-dest.lua \
-	test-flare-annot.lua \
 	test-flare-keyval.lua \
-	test-flare-action.lua \
 	test-flare-format-obj1.lua \
 	test-flare-format-obj2.lua \
 	test-flare-format-annot1.lua \
 	test-flare-format-annot2.lua \
-	test-flare-format-annot3.lua
+	test-flare-format-annot3.lua \
+	test-flare-dest.lua \
+	test-flare-action.lua
 
 MODULE_FILES = \
 	flare.sty \
 	flare.lua \
 	flare-pkg.lua \
 	flare-types.lua \
+	flare-luatex.lua \
 	flare-doc.lua \
 	flare-page.lua \
 	flare-keyval.lua \
+	flare-obj.lua \
+	flare-annot.lua \
 	flare-annot.lua \
 	flare-dest.lua \
-	flare-action.lua \
-	flare-luatex.lua \
-	flare-format-obj.lua \
-	flare-format-annot.lua
+	flare-action.lua
 
 .PHONY: test
 test: $(TEST_FILES:.lua=.run)

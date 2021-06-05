@@ -22,11 +22,10 @@ file = {
    '../flare-page.lua',
 
    '../flare-keyval.lua',
+   '../flare-obj.lua',
    '../flare-annot.lua',
    '../flare-dest.lua',
    '../flare-action.lua',
-   '../flare-format-obj.lua',
-   '../flare-format-annot.lua',
 }
 
 

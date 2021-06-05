@@ -33,8 +33,8 @@ local ignoredKeys = {
 }
 
 
---- Formatting Objects
--- @section formatting_objects
+--- Basic types
+-- @section basic types
 
 
 --- Returns a boolean value.
