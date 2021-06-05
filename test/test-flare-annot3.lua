@@ -133,9 +133,9 @@ test('Page:getAnnotFreeText()',
            {190.14, 494.74, 240.14, 607.24, 290.14, 607.24},
            p:getCoordinatesArray(annot, 'CL'), 0.1)
         assert.same('FreeTextCallout', annot.IT)
-        assert.same(2, annot.BS.W)
+        assert.same(1, annot.BS.W)
         assert.same('D', annot.BS.S)
-        assert.same({6, 3}, p:getArray(annot.BS, 'D'))
+        assert.same({3, 1.5}, p:getArray(annot.BS, 'D'))
         assert.same('S', annot.BE.S)
         assert.same(1, annot.BE.I)
 
@@ -281,9 +281,62 @@ test('Page:getAnnotLine()',
 end)
 
 
-test('Page:getAnnotFileAttachment() #ok',
+test('Page:getAnnotPolygon()',
      function()
+        local pdf_fn = createTestFile(
+           'polygon',
+           '\\includegraphics[scale=0.5]{pdf/polygon-01.pdf}')
 
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        assert.same('Annot', annot.Type)
+        assert.same('Polygon', annot.Subtype)
+        assert.nearly_same({189.74, 595.14, 239.74, 620.14,
+                            214.74, 645.14, 204.74, 645.14},
+                           p:getArray(annot, 'Vertices'))
+        assert.same({'/ClosedArrow', '/Circle'}, p:getArray(annot, 'LE'))
+        assert.same('PolygonCloud', annot.IT)
+        assert.nearly_same({0.9, 0.9, 0.1}, p:getArray(annot, 'IC'))
+end)
+
+
+test('Page:getAnnotPolyLine()',
+     function()
+        local pdf_fn = createTestFile(
+           'polyline',
+           '\\includegraphics[scale=0.5]{pdf/polyline-01.pdf}')
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        assert.same('Annot', annot.Type)
+        assert.same('PolyLine', annot.Subtype)
+        assert.nearly_same({189.74, 595.14, 239.74, 620.14,
+                            214.74, 645.14, 204.74, 645.14},
+                           p:getArray(annot, 'Vertices'))
+        assert.same({'/ClosedArrow', '/Circle'}, p:getArray(annot, 'LE'))
+        assert.same('PolygonCloud', annot.IT)
+        assert.nearly_same({0.9, 0.9, 0.1}, p:getArray(annot, 'IC'))
+end)
+
+
+test('Page:getAnnotFileAttachment()',
+     function()
         --
         -- pdf/fileattachment-01.pdf
         --
@@ -308,7 +361,6 @@ test('Page:getAnnotFileAttachment() #ok',
         
         assert.same('Filespec', annot.FS.Type)
         assert.same('fileattachment.txt', annot.FS.F)
-
 
         --
         -- pdf/fileattachment-02.pdf

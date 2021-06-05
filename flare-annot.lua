@@ -123,7 +123,7 @@ function Page:formatAnnotation(annot, objnum)
       return self:formatTable(t)
    else
       pkg.warning(
-         string.format("Annotation of type '%s' not supported.", annot.Subtype))
+         string.format("Annotation of type '%s' not supported", annot.Subtype))
       return nil
    end
 end
@@ -259,7 +259,7 @@ end
 -- @return Table
 function Page:getAnnotSquare(annot)
    local t = {
-      BS = self:getDictionary(annot, 'BS'),
+      BS = self:getBorderStyle(annot, 'BS'),
       IC = self:getArray(annot, 'IC'),
       BE = self:getDictionary(annot, 'BE'),
       RD = self:getArray(annot, 'RD'),
@@ -346,7 +346,7 @@ function Page:getAnnotFreeText(annot)
       IT = self:getName(annot, 'IT'),
       BE = self:getDictionary(annot, 'BE'),
       RD = self:getAnnotFreeText_RD(annot, 'RD'),
-      BS = self:getDictionary(annot, 'BS'),
+      BS = self:getBorderStyle(annot, 'BS'),
       LE = self:getDictionary(annot, 'LE'),
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
@@ -397,7 +397,7 @@ end
 function Page:getAnnotLine(annot)
    local t = {
       L = self:getCoordinatesArray(annot, 'L'),
-      BS = self:getDictionary(annot, 'BS'),
+      BS = self:getBorderStyle(annot, 'BS'),
       LE = self:getArray(annot, 'LE'),
       IC = self:getArray(annot, 'IC'),
       LL = self:getNumber(annot, 'LL', true),
@@ -447,6 +447,26 @@ function Page:getAnnotSquiggly(annot)
    return self:getAnnotTextMarkup(annot)
 end
 
+
+function Page:getAnnotPolygon(annot)
+   local t = {
+      Vertices = self:getCoordinatesArray(annot, 'Vertices'),
+      LE = self:getArray(annot, 'LE'),
+      BS = self:getBorderStyle(annot, 'BS'),
+      IC = self:getArray(annot, 'IC'),
+      BE = self:getDictionary(annot, 'BE', true),
+      IT = self:getName(annot, 'IT'),
+      -- TODO: Scaling of measure dicionary necessary.
+   }
+   self:appendTable(t, self:getAnnotCommonEntries(annot))
+   self:appendTable(t, self:getAnnotMarkupEntries(annot))
+   return t
+end
+
+
+function Page:getAnnotPolyLine(annot)
+   return self:getAnnotPolygon(annot)
+end
 
 --- Returns a `FileAttachment` annotation table.
 -- @pdfe annot annotation dictionary
@@ -660,6 +680,21 @@ function Page:formatBorderDash(dash, scale)
    else
       return ''
    end
+end
+
+
+function Page:getBorderStyle(annot, key)
+   local bs = annot[key]
+   if bs == nil then
+      return nil
+   end
+   local t = types.pdfdictionary:new({
+         Type = '/Border',
+         W = self:getNumber(bs, 'W', true),
+         S = self:getName(bs, 'S'),
+         D = self:getArray(bs, 'D', true),
+   })
+   return t
 end
 
 

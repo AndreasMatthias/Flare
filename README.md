@@ -39,6 +39,7 @@ Following annotations are implemented so far:
 - Text, FreeText
 - Link
 - Line
+- Polygon, PolyLine
 - FileAttachment
 
 ## Requirements

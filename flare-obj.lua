@@ -178,7 +178,9 @@ end
 -- @number scale scaling factor
 -- @return Scaled number
 function Page:scaleNumber(num, scale)
-   if tonumber(scale) then
+   if num == nil then
+      return nil
+   elseif tonumber(scale) then
       return num * scale
    elseif scale == true then
       return num * 0.5 * (self.ctm.a + self.ctm.d)
@@ -198,6 +200,9 @@ function Page:getArray(obj, key, scale)
    if type(user) == 'string' then
       return user
    else
+      if obj == nil then
+         return nil
+      end
       local array = obj[key]
       if array then
          local t = pdfarray:new()
@@ -222,6 +227,9 @@ function Page:getDictionary(obj, key, scale)
    if type(user) == 'string' then
       return user
    else
+      if obj == nil then
+         return nil
+      end
       local dict = obj[key]
       if dict then
          local t = pdfdictionary:new()
