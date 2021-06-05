@@ -4,11 +4,11 @@ TEST_FILES = \
 	test-flare-doc.lua \
 	test-flare-page.lua \
 	test-flare-keyval.lua \
-	test-flare-format-obj1.lua \
-	test-flare-format-obj2.lua \
-	test-flare-format-annot1.lua \
-	test-flare-format-annot2.lua \
-	test-flare-format-annot3.lua \
+	test-flare-obj1.lua \
+	test-flare-obj2.lua \
+	test-flare-annot1.lua \
+	test-flare-annot2.lua \
+	test-flare-annot3.lua \
 	test-flare-dest.lua \
 	test-flare-action.lua
 
@@ -54,7 +54,7 @@ $(MODULE_FILES):
 .PHONY: clean distclean
 clean:
 	rm -f *.aux *.log
-	rm -f luacov.stats.out $(TEST_FILES:.lua=.run)
+	rm -f luacov.stats.out $(TEST_FILES:.lua=.run) $(TEST_FILES:.lua=.pdf)
 
 distclean: clean
 	rm -f -r auto
