@@ -269,7 +269,7 @@ function Page:getStream(obj, key)
       return user
    else
       local stream, dict = pdfe.getstream(obj, key)
-      local content = pdfe.readwholestream(stream)
+      local content = pdfe.readwholestream(stream, true)
       local dict = self:getDictionary2(dict)
       local n = pdf.immediateobj('stream', content, self:formatTable(dict))
       return string.format('%d 0 R', n)
