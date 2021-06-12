@@ -25,6 +25,9 @@ tlmgr install \
       etoolbox \
       nodetree \
       mwe \
+      l3kernel \
+      l3backend \
+      l3experimental \
       pdfmanagement-testphase
 
 # no backups
