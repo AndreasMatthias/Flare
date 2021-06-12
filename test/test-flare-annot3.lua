@@ -10,7 +10,7 @@
 -- version 2008 or later.
 --
 -- This work has the LPPL maintenance status `maintained'.
--- 
+--
 -- The Current Maintainer of this work is Andreas MATTHIAS.
 --
 
@@ -37,7 +37,7 @@ stringio = require('pl.stringio')
 nt = require('nodetree')
 
 
-function createTestFile(filename, body)
+function createTestFile(filename, body, pdfmanagement)
    infile = 'tmp_' .. filename .. '.tex'
    outfile = 'tmp_' .. filename .. '.pdf'
    logfile = 'tmp_' .. filename .. '.log'
@@ -46,6 +46,14 @@ function createTestFile(filename, body)
    local content = fh:read('a')
    content = content:gsub('<body>', body)
    fh:close()
+
+   if pdfmanagement then
+      content = content:gsub('<pdfmanagement>',
+                             '\\RequirePackage{pdfmanagement-testphase}\n' ..
+                             '\\DeclareDocumentMetadata{}')
+   else
+      content = content:gsub('<pdfmanagement>', '')
+   end
 
    local fh =  io.open(infile, 'w')
    fh:write(content)
@@ -59,13 +67,13 @@ function createTestFile(filename, body)
       os.execute(string.format('cat %s', logfile))
    end
    assert.same(0, ret)
-   
+
    local ret = os.execute(cmd)
    if ret ~= 0 then
       os.execute(string.format('cat %', logfile))
    end
    assert.same(0, ret)
-   
+
    return outfile
 end
 
@@ -88,7 +96,7 @@ test('Page:getAnnotText()',
 
         local pdf = pdfe.open(pdf_fn)
         local annot = pdfe.getpage(pdf, 1).Annots[1]
-        
+
         assert.same('Annot', annot.Type)
         assert.same('Text', annot.Subtype)
         assert.same('annot-1', annot.NM)
@@ -143,6 +151,80 @@ test('Page:getAnnotFreeText()',
 end)
 
 
+test('Page:getAnnotLink()',
+     function()
+        local pdf_fn = createTestFile(
+           'link',
+           '\\fbox{\\includegraphics[scale=0.5, page=1]{pdf/link-01.pdf}}\n\z
+            \\newpage\n\z
+            \\fbox{\\includegraphics[scale=0.5, page=2]{pdf/link-01.pdf}}'
+        )
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', 1)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+        assert.same('Link', annot.Subtype)
+        assert.same('GoTo', annot.A.S)
+        assert.same('pdf/link-01.pdf-section.2', annot.A.D)
+
+        local annot = pdfe.getpage(pdf, 1).Annots[2]
+        assert.same('Link', annot.Subtype)
+        assert.same('Action', annot.A.Type)
+        assert.same('http://www.ctan.org', annot.A.URI)
+        assert.same('URI', annot.A.S)
+        assert.same('I', annot.H)
+
+        local annot = pdfe.getpage(pdf, 2).Annots[1]
+        assert.same('Link', annot.Subtype)
+        assert.same('GoTo', annot.A.S)
+        assert.same('pdf/link-01.pdf-section.1', annot.A.D)
+
+        -- TODO: Check, if destinations were set.
+
+        -- TODO: Link shall not be created, if the corresponding
+        --       destination page is missing. This needs to be fixed
+        --       in the source code.
+end)
+
+
+test('Page:getAnnotHighlight()',
+     function()
+        local pdf_fn = createTestFile(
+           'highlight',
+           '\\fbox{\\includegraphics[scale=0.5]{pdf/highlight-01.pdf}}')
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local page_objnum = p:getPageObjNum(pagenum)
+
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+
+        assert.same('Annot', annot.Type)
+        assert.same('Highlight', annot.Subtype)
+        assert.same('annot-1', annot.NM)
+        assert.same('contents', annot.Contents)
+        assert.same('text', annot.T)
+        assert.same(4, annot.F)
+        assert.same('D:20210429202216+02\'00', annot.M)
+        assert.same(1, annot.CA)
+        assert.nearly_same(
+           { 347.196, 629.420, 374.516, 629.420, 347.196, 622.590,
+             374.516, 622.590, 202.691, 623.668, 245.108, 623.668,
+             202.691, 616.478, 245.108, 616.478 },
+           p:getCoordinatesArray(annot, 'QuadPoints'))
+end)
+
+
 test('Page:getAnnotSquiggly()',
      function()
         local pdf_fn = createTestFile(
@@ -159,7 +241,7 @@ test('Page:getAnnotSquiggly()',
 
         local pdf = pdfe.open(pdf_fn)
         local annot = pdfe.getpage(pdf, 1).Annots[1]
-        
+
         assert.same('Annot', annot.Type)
         assert.same('Squiggly', annot.Subtype)
         assert.same('annot-1', annot.NM)
@@ -192,7 +274,7 @@ test('Page:getAnnotUnderline()',
 
         local pdf = pdfe.open(pdf_fn)
         local annot = pdfe.getpage(pdf, 1).Annots[1]
-        
+
         assert.same('Annot', annot.Type)
         assert.same('Underline', annot.Subtype)
         assert.same('annot-1', annot.NM)
@@ -225,7 +307,7 @@ test('Page:getAnnotStrikeOut()',
 
         local pdf = pdfe.open(pdf_fn)
         local annot = pdfe.getpage(pdf, 1).Annots[1]
-        
+
         assert.same('Annot', annot.Type)
         assert.same('StrikeOut', annot.Subtype)
         assert.same('annot-1', annot.NM)
@@ -258,7 +340,7 @@ test('Page:getAnnotLine()',
 
         local pdf = pdfe.open(pdf_fn)
         local annot = pdfe.getpage(pdf, 1).Annots[1]
-        
+
         assert.same('Annot', annot.Type)
         assert.same('Line', annot.Subtype)
         assert.same('annot-1', annot.NM)
@@ -357,7 +439,7 @@ test('Page:getAnnotStamp()',
 end)
 
 
-test('Page:getAnnotInk() #ok',
+test('Page:getAnnotInk()',
      function()
         local pdf_fn = createTestFile(
            'ink',
@@ -415,7 +497,7 @@ test('Page:getAnnotFileAttachment()',
         assert.same('FileAttachment', annot.Subtype)
         assert.same(page_objnum, luatex.getreference(annot, 'P'))
         assert.same('PushPin', annot.Name)
-        
+
         assert.same('Filespec', annot.FS.Type)
         assert.same('fileattachment.txt', annot.FS.F)
 
@@ -440,7 +522,7 @@ test('Page:getAnnotFileAttachment()',
         assert.same('FileAttachment', annot.Subtype)
         assert.same(page_objnum, luatex.getreference(annot, 'P'))
         assert.same('PushPin', annot.Name)
-        
+
         assert.same('Filespec', annot.FS.Type)
         assert.same('foo.txt', annot.FS.F)
 
@@ -449,7 +531,29 @@ test('Page:getAnnotFileAttachment()',
                     'Just testing.\n\n',
                     stream)
         assert.same(41, len)
-        
+
+end)
+
+
+test('Page:getAnnotWidget()',
+     function()
+        local pdf_fn = createTestFile(
+           'widget',
+           '\\includegraphics[scale=0.5]{pdf/widget-01.pdf}',
+           true)
+
+        local d = Doc:new()
+        local p = Page:new(d)
+        local pagenum = 1
+        p:setGinKV('filename', pdf_fn)
+        p:setGinKV('page', pagenum)
+        p:openFile()
+        local pdf = pdfe.open(pdf_fn)
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+
+        assert.same('Widget', annot.Subtype)
+        assert.same('Off', annot.AS)
+
 end)
 
 

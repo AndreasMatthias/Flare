@@ -10,7 +10,7 @@
 -- version 2008 or later.
 --
 -- This work has the LPPL maintenance status `maintained'.
--- 
+--
 -- The Current Maintainer of this work is Andreas MATTHIAS.
 --
 
@@ -53,7 +53,7 @@ test('Page:getAnnotText()',
         assert.same(true, t.Open)
         assert.same('/Help', t.Name)
 
-        
+
         local p = Page:new(d)
         p:setGinKV('filename', 'pdf/text-02.pdf')
         p:setGinKV('page', 1)
@@ -92,7 +92,7 @@ test('Page:formatIRT()',
         assert.same('44 0 R', p:formatIRT(annot, 33))
 end)
 
-            
+
 test('Page:getAnnotCircle()',
      function()
         local d = Doc:new()
@@ -142,7 +142,7 @@ test('Page:getAnnotSquare()',
         assert.same('/Square', t.Subtype)
         assert.same({0.9, 0.9, 0.1}, t.IC)
 end)
-     
+
 
 test('Page:getAnnotHighlight()',
      function()
@@ -162,33 +162,56 @@ test('Page:getAnnotHighlight()',
            t.QuadPoints)
 
         assert.same('(D:20210429202216+02\'00)', t.M)
-        assert.same('<FEFF0061006E00640072006500610073>', t.T)
-        assert.same('<FEFF>', t.Contents)
-        assert.same('(okular-{1c0dc025-7938-4ccf-8aea-bedc2827469d})', t.NM)
+        assert.same('(text)', t.T)
+        assert.same('(contents)', t.Contents)
+        assert.same('(annot-1)', t.NM)
         assert.same(4, t.F)
-        assert.nearly_same({0.96078, 0.47451, 0}, t.C)
+        assert.nearly_same({1, 0.5, 0}, t.C)
         assert.same(1, t.CA)
         assert.same('[ 0 0 1 ]', t.Border)
 end)
 
 
-function createTestFile(filename, body)
-   infile = 'tmp_' .. filename .. '.tex'
-   outfile = 'tmp_' .. filename .. '.pdf'
+test('Page:getFileSpecification()',
+     function()
+        local p = Page:new(Doc:new())
+        p:setGinKV('filename', 'pdf/fileattachment-02.pdf')
+        p:setGinKV('page', 1)
+        p:openFile()
+        local annot = p:getAnnots()[1]
+        local t = p:getFileSpecification(annot, 'FS')
 
-   local fh = io.open('template.tex', 'r')
-   local content = fh:read('a')
-   content = content:gsub('<body>', body)
-   fh:close()
+        assert.same('/Filespec', t.Type)
+        assert.same('(foo.txt)', t.F)
+        assert.is_pdf_ref(t.EF.F)
+end)
 
-   local fh =  io.open(infile, 'w')
-   fh:write(content)
-   fh:close()
 
-   local cmd = string.format('lualatex %s > /dev/null', infile)
-   os.execute(cmd)
-   return outfile
-end
+test('Page:getEmbeddedFileDict()',
+     function()
+        local p = Page:new(Doc:new())
+        p:setGinKV('filename', 'pdf/fileattachment-02.pdf')
+        p:setGinKV('page', 1)
+        p:openFile()
+        local annot = p:getAnnots()[1]
+        local t = p:getEmbeddedFileDict(annot.FS, 'EF')
+        assert.is_pdf_ref(t.F)
+end)
+
+
+test('Page:getField()',
+     function()
+        local p = Page:new(Doc:new())
+        p:setGinKV('filename', 'pdf/widget-01.pdf')
+        p:setGinKV('page', 1)
+        p:openFile()
+        local annot = p:getAnnots()[1]
+        local t = p:getField(annot.Parent, 33)
+
+        assert.same('/Btn', t.FT)
+        assert.same({ '33 0 R' }, t.Kids)
+
+end)
 
 
 end) -- describe

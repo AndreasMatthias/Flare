@@ -97,18 +97,6 @@ end
 
 
 --- Returns a PDF reference.
--- @number objnum object number
--- @return String
-function Page:makeRef(objnum)
-   if objnum then
-      return string.format('%d 0 R', objnum)
-   else
-      return 'null'
-   end
-end
-
-
---- Returns a PDF reference.
 -- For each imported PDF page the cache contains a key `page_obj_old`, which is
 -- the object number of the existing (old) PDF page, and a key `page_obj_new`,
 -- which is the object number of the new PDF page. This function returns

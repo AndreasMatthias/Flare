@@ -10,7 +10,7 @@
 %% version 2008 or later.
 %%
 %% This work has the LPPL maintenance status `maintained'.
-%% 
+%%
 %% The Current Maintainer of this work is Andreas MATTHIAS.
 %%
 
@@ -103,8 +103,18 @@
 }
 
 
-\msg_new:nnn { FLR }{ patching }{ Patching~ #1.}{}
-\msg_new:nnn { FLR }{ patchingfailed }{ Paching~ of~ #1 failed.}{}
+\msg_new:nnn { Flare }{ missing-pdfmanagement }
+  {Please~ load~ package~ pdfmanagement.~ Widget~ annotations~
+    will~ not~ work~ correctly~ without~ pdfmanagement.}
+
+\cs_new:Nn \FLR_AddFieldToAcroForm:n {
+  \cs_if_exist_use:NTF\pdfmanagement_add:nnn
+    {{Catalog/AcroForm}{Fields}{#1~ 0~ R}}
+    {\msg_error:nn { Flare }{missing-pdfmanagement}}
+}
+
+\msg_new:nnn { Flare }{ patching }{ Patching~ #1.}{}
+\msg_new:nnn { Flare }{ patchingfailed }{ Paching~ of~ #1 failed.}{}
 
 %
 % Turning off ExplSyntax because different catcodes would
@@ -121,9 +131,9 @@
 \pretocmd{\Gread@pdftex}{%
   \FLR@CopyAnnotations
 }{%
-  \FLR@msginfo{FLR}{patching}{\Gread@pdftex}%
+  \FLR@msginfo{Flare}{patching}{\Gread@pdftex}%
 }{%
-  \FLR@msgerror{FLR}{patchingfailed}{\Gread@pdftex}%
+  \FLR@msgerror{Flare}{patchingfailed}{\Gread@pdftex}%
 }
 
 \patchcmd{\Gin@ii}{%
@@ -131,7 +141,7 @@
 }{%
   \FLR@setkeys{#1}{#2}%
 }{%
-  \FLR@msginfo{FLR}{patching}{\Gin@ii}%
+  \FLR@msginfo{Flare}{patching}{\Gin@ii}%
 }{%
-  \FLR@msgerror{FLR}{patchingfailed}{\Gin@ii}%
+  \FLR@msgerror{Flare}{patchingfailed}{\Gin@ii}%
 }

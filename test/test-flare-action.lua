@@ -144,15 +144,6 @@ test('Page:getAction_Goto_DirectDest()',
 end)
 
 
-test('Page:makeRef()',
-     function()
-        local d = Doc:new()
-        local p = Page:new(d)
-        assert.same('null', p:makeRef())
-        assert.same('15 0 R', p:makeRef(15))
-end)
-
-
 test('Page:getRefPageObjNew()',
      function()
         local d = Doc:new()

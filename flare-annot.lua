@@ -57,21 +57,20 @@ end
 
 --- Inserts annotation `annot` into the LaTeX document.
 -- @pdfe annot Annotation dictionary
--- @number objnum object number of annotation
-function Page:insertAnnot(annot, objnum)
+-- @number objnum_old object number of annotation
+function Page:insertAnnot(annot, objnum_old)
    local annotbox = self:rect2tab(annot.Rect)
    local mediabox = self:getMediaBox()
    local pos = self:getTeXPos(mediabox, annotbox)
 
    self.ctm = self:getCTM()
    local scale = 0.5 * (self.ctm.a + self.ctm.d)
-   local data = self:formatAnnotation(annot, objnum)
+   local data, objnum_new = self:formatAnnotation(annot, objnum_old)
    if data == nil then
       return
    end
 
    local annot = node.new(node.id('whatsit'), node.subtype('pdf_annot'))
-   local objnum_new = pdf.reserveobj('annot')
    annot.width = self:bp2sp(pos.width) * scale
    annot.height = self:bp2sp(pos.height) * scale
    annot.depth = tex.sp('0bp')
@@ -113,17 +112,18 @@ end
 -- @pdfe annot annotation dictionary
 -- @number objnum object number of annotation
 -- @return String
+-- @return Object number
 function Page:formatAnnotation(annot, objnum)
    if self:getUserInput('@@@') then
       return nil
    end
    local func = self:getAnnotFunc(annot)
    if func then
-      local t = func(self, annot)
-      return self:formatTable(t)
+      local t, objnum = func(self, annot)
+      return self:formatTable(t, false), objnum
    else
       pkg.warning(
-         string.format("Annotation of type '%s' not supported", annot.Subtype))
+         string.format("Annotations of type '%s' not supported", annot.Subtype))
       return nil
    end
 end
@@ -140,27 +140,33 @@ end
 -- This function converts such a table into a long string to be used
 -- as the `data` field of a `pdf_annot` whatsit node.
 -- @table t table
--- @boolean dict_tags internal flag, `nil` for initial call
+-- @boolean delim dictionary delimiters
 -- @return Formatted string
-function Page:formatTable(t, dict_tags)
+function Page:formatTable(t, delim)
+   if delim == nil then
+      delim = true
+   end
    local spairs = pairs
    if _G._UNITTEST then
       spairs = sorted_pairs
    end
-   dict_tags = dict_tags or false
    if type(t) == 'table' then
       if t.type == 'array' then
          local str = ''
          for _, v in spairs(t) do
             str = str .. ' ' .. self:formatTable(v, true)
          end
-         return '[' .. str .. ' ]'
+         if delim then
+            return '[' .. str .. ' ]'
+         else
+            return str:sub(2)
+         end
       else
          local str = ''
          for k, v in spairs(t) do
             str = string.format('%s /%s %s', str, k, self:formatTable(v, true))
          end
-         if dict_tags then
+         if delim then
             return '<<' .. str .. ' >>'
          else
             return str:sub(2)
@@ -196,7 +202,7 @@ end
 
 --- Returns markup annotation entries.
 -- @pdfe annot annotation dictionary
--- @number objnum object number of annotation
+-- @number objnum object number
 -- @return Table
 function Page:getAnnotMarkupEntries(annot, objnum)
    return {
@@ -249,7 +255,7 @@ function Page:formatIRT(annot, objnum)
    if annot_obj_new == nil then
       return nil
    else
-      return string.format('%d 0 R', annot_obj_new)
+      return self:makeRef(annot_obj_new)
    end
 end
 
@@ -266,13 +272,14 @@ function Page:getAnnotSquare(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns a `Circle` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotCircle(annot)
    return self:getAnnotSquare(annot)
 end
@@ -281,6 +288,7 @@ end
 --- Returns a a `Text` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotText(annot)
    local t = {
       Open = self:getBoolean(annot, 'Open'),
@@ -290,7 +298,7 @@ function Page:getAnnotText(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
@@ -352,19 +360,21 @@ end
 --- Returns a `Text Markup` annotion dictionary.
 -- @pdfe annot annotation dictionary.
 -- @return Table
+-- @return Object number
 function Page:getAnnotTextMarkup(annot)
    local t = {
       QuadPoints = self:getCoordinatesArray(annot, 'QuadPoints')
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns a `FreeText` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotFreeText(annot)
    local t = {
       DA = self:getString(annot, 'DA'),
@@ -380,7 +390,7 @@ function Page:getAnnotFreeText(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
@@ -407,6 +417,7 @@ end
 --- Returns a `Link` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotLink(annot)
    local t = {
       A = self:getAction(annot['A']),
@@ -416,13 +427,14 @@ function Page:getAnnotLink(annot)
       QuadPoints = self:getCoordinatesArray(annot, 'QuadPoints'),
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns a `Line` annotation dicationary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotLine(annot)
    local t = {
       L = self:getCoordinatesArray(annot, 'L'),
@@ -441,13 +453,14 @@ function Page:getAnnotLine(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns a `Highlight` annotation dictionary.
 -- @pdfe annot annotation dictionary.
 -- @return Table
+-- @return Object number
 function Page:getAnnotHighlight(annot)
    return self:getAnnotTextMarkup(annot)
 end
@@ -456,6 +469,7 @@ end
 --- Returns an `Underline` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotUnderline(annot)
    return self:getAnnotTextMarkup(annot)
 end
@@ -464,6 +478,7 @@ end
 --- Returns a `StrikeOut` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotStrikeOut(annot)
    return self:getAnnotTextMarkup(annot)
 end
@@ -472,6 +487,7 @@ end
 --- Returns a `Squiggly` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotSquiggly(annot)
    return self:getAnnotTextMarkup(annot)
 end
@@ -480,6 +496,7 @@ end
 --- Returns a `Polygon` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotPolygon(annot)
    local t = {
       Vertices = self:getCoordinatesArray(annot, 'Vertices'),
@@ -492,13 +509,14 @@ function Page:getAnnotPolygon(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns a `PolyLine` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotPolyLine(annot)
    return self:getAnnotPolygon(annot)
 end
@@ -507,19 +525,21 @@ end
 --- Returns a `Stamp` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotStamp(annot)
    local t = {
       Name = self:getName(annot, 'Name'),
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns an `Ink` annotation dictionary.
 -- @pdfe annot annotation dictionary
 -- @return Table
+-- @return Object number
 function Page:getAnnotInk(annot)
    local t = {
       InkList = self:getCoordinatesArrayArray(annot, 'InkList'),
@@ -527,13 +547,14 @@ function Page:getAnnotInk(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
 --- Returns a `FileAttachment` annotation table.
 -- @pdfe annot annotation dictionary
 -- @return Table.
+-- @return Object number
 function Page:getAnnotFileAttachment(annot)
    local t = {
       FS = self:getFileSpecification(annot, 'FS'),
@@ -541,7 +562,7 @@ function Page:getAnnotFileAttachment(annot)
    }
    self:appendTable(t, self:getAnnotCommonEntries(annot))
    self:appendTable(t, self:getAnnotMarkupEntries(annot))
-   return t
+   return t, pdf.reserveobj('annot')
 end
 
 
@@ -678,6 +699,106 @@ function Page:getRelatedFileArray(array)
       t[#t + 1] = self:getString(array, idx)
       t[#t + 1] = self:getStream(array, idx + 1)
    end
+end
+
+
+--- Returns a `Widget` annotation dictionary.
+-- @pdfe annot annotation dictionary
+-- @return Table
+-- @return Object number
+function Page:getAnnotWidget(annot)
+   local objnum = pdf.reserveobj('annot')
+   local t = {
+      H = self:getName(annot, 'H'),
+      MK = self:getAppearanceCharacteristicsDict(annot, 'MK'),
+      A = self:getDictionary(annot, 'A'),
+      AA = self:getDictionary(annot, 'AA'),
+      BS = self:getDictionary(annot, 'BS'),
+      Parent = self:createField(annot.Parent, objnum),
+   }
+   self:appendTable(t, self:getAnnotCommonEntries(annot))
+   return t, objnum
+end
+
+
+--- Creates a field object.
+-- @pdfe field field dictionary
+-- @number objnum_kid object number of kid
+-- @return Reference
+function Page:createField(field, objnum_kid)
+   if field == nil then
+      return nil
+   end
+   local t = self:getField(field, objnum_kid)
+   local objnum_field = pdf.immediateobj(self:formatTable(t))
+   self:addFieldToAcroForm(objnum_field)
+   return self:makeRef(objnum_field)
+end
+
+
+--- Add a field to the `Fields` entry of an `AcroForm` dictionary.
+-- @number objnum object number of field
+function Page:addFieldToAcroForm(objnum)
+   local str = string.format(
+      '\\ExplSyntaxOn' ..
+      '\\FLR_AddFieldToAcroForm:n{%d}', objnum)
+   tex.print(str)
+end
+
+
+--- Returns a field ('FT') dictionary.
+-- @pdfe field field dictionary
+-- @number objnum_kid object number of kid
+-- @return Table
+function Page:getField(field, objnum_kid)
+   return {
+      FT = self:getName(field, 'FT'),
+      Kids = types.pdfarray:new({self:makeRef(objnum_kid)}),
+      T = self:getString(field, 'T'),
+      TU = self:getString(field, 'TU'),
+      TM = self:getString(field, 'TM'),
+      Ff = self:getInteger(field, 'Ff'),
+      V = self:getObj(field, 'V'),
+      DV = self:getObj(field, 'DV'),
+      AA = self:getDictionary(field, 'AA'),
+   }
+end
+
+
+function Page:getAppearanceCharacteristicsDict(obj, key)
+   local annot = obj[key]
+   if annot == nil then
+      return nil
+   end
+   local t = {
+      R = self:getInteger(annot, 'R'),
+      BC = self:getArray(annot, 'BC'),
+      GB = self:getArray(annot, 'BG'),
+      CA = self:getString(annot, 'CA'),
+      RC = self:getString(annot, 'RC'),
+      AC = self:getString(annot, 'AC'),
+      I = self:getStream(annot, 'I'),
+      RI = self:getStream(annot, 'RI'),
+      IX = self:getStream(annot, 'IX'),
+      IF = self:getIconFitDict(annot, 'IF'),
+      TP = self:getInteger(annot, 'TP'),
+   }
+   return t
+end
+
+
+function Page:getIconFitDict(obj, key)
+   local annot = obj[key]
+   if annot == nil then
+      return nil
+   end
+   local t = {
+      SW = self:getName(annot, 'SW'),
+      S = self:getName(annot, 'S'),
+      A = self:getArray(annot, 'A'),
+      FB = self:getBoolean(annot, 'FB'),
+   }
+   return t
 end
 
 

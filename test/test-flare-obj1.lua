@@ -10,7 +10,7 @@
 -- version 2008 or later.
 --
 -- This work has the LPPL maintenance status `maintained'.
--- 
+--
 -- The Current Maintainer of this work is Andreas MATTHIAS.
 --
 
@@ -75,6 +75,17 @@ test('Page:clean_utf16()',
 end)
 
 
+test('Page:scaleNumber()',
+     function()
+        local d = Doc:new()
+        local p = Page:new(d)
+        p.ctm = p:makeCTM(2, 0, 0, 2, 0, 0)
+        assert.same(6, p:scaleNumber(3, 2))
+        assert.same(6, p:scaleNumber(3, true))
+        assert.same(3, p:scaleNumber(3, false))
+end)
+
+
 test('Page:errorIfArray()',
      function()
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
@@ -111,6 +122,15 @@ test('Page:zero_based_indexing()',
         local p = Page:new(Doc:new())
         assert.same(2, p:zero_based_indexing(nil, 3))
         assert.same('foo', p:zero_based_indexing(nil, 'foo'))
+end)
+
+
+test('Page:makeRef()',
+     function()
+        local d = Doc:new()
+        local p = Page:new(d)
+        assert.same('null', p:makeRef())
+        assert.same('15 0 R', p:makeRef(15))
 end)
 
 
@@ -230,7 +250,7 @@ test('Page:getInteger()',
         assert.same(8, p:getInteger(pageDict, 'TestInteger', 2))
         p.ctm = p:makeCTM(3, 0, 0, 3, 0, 0)
         assert.same(12, p:getInteger(pageDict, 'TestInteger', true))
-        
+
         -- user input
         p.GinKV.page, p.annotId = 2, 3
         p:setFlareKV(2, 3, 'TestInteger', 'replace', '99')
@@ -308,7 +328,7 @@ test('Page:getArray()',
         local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
         local p = Page:new(Doc:new())
         p.ctm = p:makeCTM(0.5, 0, 0, 0.5, 0, 0)
-        
+
         -- copy from pdf
         assert.same(
            {1, 2, 3},
@@ -333,6 +353,20 @@ test('Page:getArray()',
         assert.same(
            '[(aaa) (bbb)]',
            p:getArray(pageDict, 'TestArray'))
+end)
+
+
+test('Page:getArray2()',
+     function()
+        local pageDict = pdfe.open('pdf/pdfTypes.pdf').Pages[1]
+        local p = Page:new(Doc:new())
+        p.ctm = p:makeCTM(0.5, 0, 0, 0.5, 0, 0)
+
+        -- copy from pdf
+        assert.same(
+           {1, 2, 3},
+           p:getArray2(pageDict['TestArray']))
+
 end)
 
 

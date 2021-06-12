@@ -321,17 +321,6 @@ test('Page:formatBorder_hlp()',
 end)
 
 
-test('Page:scaleNumber()',
-     function()
-        local d = Doc:new()
-        local p = Page:new(d)
-        p.ctm = p:makeCTM(2, 0, 0, 2, 0, 0)
-        assert.same(6, p:scaleNumber(3, 2))
-        assert.same(6, p:scaleNumber(3, true))
-        assert.same(3, p:scaleNumber(3, false))
-end)
-
-
 test('Page:appendTable()',
      function()
         local d = Doc:new()
@@ -366,23 +355,32 @@ test('Page:formatTable()',
            nil,
            p:formatTable(nil))
         assert.same(
-           '/bar xox /foo 123',
+           '<< /bar xox /foo 123 >>',
            p:formatTable({ foo = 123, bar = 'xox'}))
         assert.same(
            '<< /bar xox /foo 123 >>',
            p:formatTable({ foo = 123, bar = 'xox'}, true))
         assert.same(
-           '/bar [ a b c ] /foo 123',
+           '/bar xox /foo 123',
+           p:formatTable({ foo = 123, bar = 'xox'}, false))
+        assert.same(
+           '<< /bar [ a b c ] /foo 123 >>',
            p:formatTable({ foo = 123, bar = types.pdfarray:new({'a', 'b', 'c'})}))
         assert.same(
            '<< /bar [ a b c ] /foo 123 >>',
            p:formatTable({ foo = 123, bar = types.pdfarray:new({'a', 'b', 'c'})}, true))
         assert.same(
-           '/bar << /a 1 /b 2 >> /foo 123',
+           '/bar [ a b c ] /foo 123',
+           p:formatTable({ foo = 123, bar = types.pdfarray:new({'a', 'b', 'c'})}, false))
+        assert.same(
+           '<< /bar << /a 1 /b 2 >> /foo 123 >>',
            p:formatTable({ foo = 123, bar = types.pdfdictionary:new({a=1, b=2})}))
         assert.same(
            '<< /bar << /a 1 /b 2 >> /foo 123 >>',
            p:formatTable({ foo = 123, bar = types.pdfdictionary:new({a=1, b=2})}, true))
+        assert.same(
+           '/bar << /a 1 /b 2 >> /foo 123',
+           p:formatTable({ foo = 123, bar = types.pdfdictionary:new({a=1, b=2})}, false))
 end)
 
 
@@ -403,7 +401,50 @@ test('Page:getCoordinatesArray()',
         assert.nearly_same(
            {2 * 466.41007, 2 * 710.2714, 2 * 125.75146, 2 * 575.1489},
            p:getCoordinatesArray(annot, 'L'))
+end)
 
+
+test('Page:getCoordinatesArrayArray()',
+     function()
+        local d = Doc:new()
+        local p = Page:new(d)
+
+        local pdf = pdfe.open('pdf/ink-01.pdf')
+        local annot = pdfe.getpage(pdf, 1).Annots[1]
+
+        assert.nearly_same(
+           {{ 163.166, 685.651, 169.891, 696.257, 180.475,
+              712.651, 188.343, 723.243, 196.026, 731.441, 203.856,
+              737.486, 213.922, 742.275, 225.106, 744.568, 237.737,
+              744.428, 252.063, 741.852, 263.748, 738.294, 272.970,
+              734.072, 279.595, 729.250, 283.571, 723.868, 285.230,
+              717.496, 284.609, 710.433, 281.697, 702.903, 276.820,
+              695.767, 272.348, 690.176, 264.056, 680.772, 258.915,
+              677.367, 253.189, 675.535, 245.132, 675.641, 235.208,
+              678.168, 225.745, 682.500, 218.469, 687.847, 214.812,
+              692.484, 213.362, 697.157, 214.162, 701.724, 217.193,
+              706.108, 219.430, 708.131, 220.164, 708.322, 221.667,
+              708.111, 223.161, 707.901, 223.931, 708.131 }},
+           p:getCoordinatesArrayArray(annot, 'InkList'))
+
+        p:writeToCache('ctm', p:makeCTM(2, 0, 0, 2, 0, 0))
+        d.cacheOld = d.cacheNew
+        assert.nearly_same(
+           {{ 2*163.166, 2*685.651, 2*169.891, 2*696.257, 2*180.475,
+              2*712.651, 2*188.343, 2*723.243, 2*196.026, 2*731.441,
+              2*203.856, 2*737.486, 2*213.922, 2*742.275, 2*225.106,
+              2*744.568, 2*237.737, 2*744.428, 2*252.063, 2*741.852,
+              2*263.748, 2*738.294, 2*272.970, 2*734.072, 2*279.595,
+              2*729.250, 2*283.571, 2*723.868, 2*285.230, 2*717.496,
+              2*284.609, 2*710.433, 2*281.697, 2*702.903, 2*276.820,
+              2*695.767, 2*272.348, 2*690.176, 2*264.056, 2*680.772,
+              2*258.915, 2*677.367, 2*253.189, 2*675.535, 2*245.132,
+              2*675.641, 2*235.208, 2*678.168, 2*225.745, 2*682.500,
+              2*218.469, 2*687.847, 2*214.812, 2*692.484, 2*213.362,
+              2*697.157, 2*214.162, 2*701.724, 2*217.193, 2*706.108,
+              2*219.430, 2*708.131, 2*220.164, 2*708.322, 2*221.667,
+              2*708.111, 2*223.161, 2*707.901, 2*223.931, 2*708.131 }},
+           p:getCoordinatesArrayArray(annot, 'InkList'))
 end)
 
 

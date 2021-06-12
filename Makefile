@@ -1,3 +1,5 @@
+.PHONY: all
+all: test examples doc release
 
 .PHONY: doc
 doc:
@@ -9,6 +11,9 @@ test:
 coverage:
 	$(MAKE) $@ -C test
 
+.PHONY: examples
+examples:
+	$(MAKE) -C examples
 
 .PHONY: clean distclean
 clean:
@@ -20,16 +25,17 @@ distclean: clean
 	rm -f -r auto release
 	rm -f $(TDS-ZIP)
 	$(MAKE) distclean -C test
+	$(MAKE) distclean -C examples
 
 
 GIT_SHA:=$(shell git log --pretty=format:"%H" -1)
 GIT_SHA_SHORT:=$(shell git log --pretty=format:"%h" -1)
 GIT_DATE:=$(shell git log --pretty=format:"%cs" -1)
 
-DIST-DIR=release/tmp
-DIST-TEX-DIR=$(DIST-DIR)/tex/latex/flare/
+DIST-DIR=release
+DIST-TEX-DIR=$(DIST-DIR)/tex/latex/flare
 DIST-LUA-DIR=$(DIST-TEX-DIR)
-DIST-DOC-DIR=$(DIST-DIR)/doc/latex/flare/
+DIST-DOC-DIR=$(DIST-DIR)/doc/latex/flare
 DIST-EXP-DIR=$(DIST-DOC-DIR)/exmaples
 
 DIST-TEX-FILES= \
@@ -55,7 +61,8 @@ DIST-EXP-FILES=\
 	./examples/dummy-1.pdf \
 	./examples/dummy-2.pdf \
 	./examples/example-1.tex \
-	./examples/example-2.tex
+	./examples/example-2.tex \
+	./examples/example-3.tex
 
 TDS-ZIP=flare.tds.zip
 

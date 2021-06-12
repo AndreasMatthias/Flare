@@ -10,7 +10,7 @@
 -- version 2008 or later.
 --
 -- This work has the LPPL maintenance status `maintained'.
--- 
+--
 -- The Current Maintainer of this work is Andreas MATTHIAS.
 --
 
@@ -218,6 +218,22 @@ end
 
 
 --- Returns a @{Types:pdfdictionary}.
+-- Contrary to most other functions which use an indirect object
+-- reference (`obj[key]`), this function uses the object directly (`dict`).
+-- @pdfe array array
+-- @number scale scaling factor
+-- @return @{Types:pdfdictionary}
+function Page:getArray2(array, scale)
+   local t = pdfarray:new()
+   for idx, v in ipairs(pdfe.arraytotable(array)) do
+      t[#t + 1] = self:getObj(array, idx, scale)
+   end
+   return t
+end
+
+
+
+--- Returns a @{Types:pdfdictionary}.
 -- @pdfe obj dictionary or array
 -- @keyidx key key or index (one-based indexing)
 -- @number scale scaling factor
@@ -231,15 +247,15 @@ function Page:getDictionary(obj, key, scale)
          return nil
       end
       local dict = obj[key]
-      if dict then
-         local t = pdfdictionary:new()
-         for k, _ in pairs(pdfe.dictionarytotable(dict)) do
-            t[k] = self:getObj(dict, k, scale)
-         end
-         return t
-      else
+      if dict == nil then
          return nil
       end
+
+      local t = pdfdictionary:new()
+      for k, _ in pairs(pdfe.dictionarytotable(dict)) do
+         t[k] = self:getObj(dict, k, scale)
+      end
+      return t
    end
 end
 
@@ -262,17 +278,18 @@ end
 --- Copies a stream and returns a reference to it.
 -- @pdfe obj dictionary
 -- @string key key
+-- @number scale scaling factor
 -- @return Formatted pdf reference, eg `9 0 R`
-function Page:getStream(obj, key)
+function Page:getStream(obj, key, scale)
    local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
       local stream, dict = pdfe.getstream(obj, key)
       local content = pdfe.readwholestream(stream, true)
-      local dict = self:getDictionary2(dict)
-      local n = pdf.immediateobj('stream', content, self:formatTable(dict))
-      return string.format('%d 0 R', n)
+      local dict = self:getDictionary2(dict, scale)
+      local n = pdf.immediateobj('stream', content, self:formatTable(dict, false))
+      return self:makeRef(n)
    end
 end
 
@@ -281,27 +298,40 @@ end
 -- As a side effect it copies the referenced pdf object.
 -- @pdfe obj dictionary
 -- @string key key
+-- @number scale scaling factor
 -- @return Formatted string
-function Page:getReference(obj, key)
+function Page:getReference(obj, key, scale)
    local user = self:getUserInput(key)
    if type(user) == 'string' then
       return user
    else
       local _, ref, _ = luatex.getfromobj(obj, key)
-      local ptype, pvalue, pdetail = pdfe.getfromreference(ref)
+
+      local ptype, pobj, pdetail = pdfe.getfromreference(ref)
+
       if ptype == luatex.pdfeObjType.none or
          ptype == luatex.pdfeObjType.null then
          return nil
-      elseif
-         ptype == luatex.pdfeObjType.boolean or
+      elseif ptype == luatex.pdfeObjType.boolean or
          ptype == luatex.pdfeObjType.integer or
          ptype == luatex.pdfeObjType.number or
          ptype == luatex.pdfeObjType.name or
-         ptype == luatex.pdfeObjType.string or
-         ptype == luatex.pdfeObjType.array or
-         ptype == luatex.pdfeObjType.dictionary then
+         ptype == luatex.pdfeObjType.string then
+
          local n = pdf.immediateobj(string.format('%s', pvalue))
-         return string.format('%d 0 R', n)
+         return self:makeRef(n)
+
+      elseif ptype == luatex.pdfeObjType.array then
+         local array = self:getArray2(pobj, scale)
+         local str = self:formatTable(array)
+         local n = pdf.immediateobj(str)
+         return string.format('%s 0 R', n)
+
+      elseif ptype == luatex.pdfeObjType.dictionary then
+         local dict = self:getDictionary2(pobj, scale)
+         local str = self:formatTable(dict)
+         local n = pdf.immediateobj(str)
+         return string.format('%s 0 R', n)
 
       elseif ptype == luatex.pdfeObjType.stream then
          return self:getStream(obj, key)
@@ -373,16 +403,16 @@ function Page:getObj(obj, key, scale)
       return self:getString(obj, key)
 
    elseif ptype == luatex.pdfeObjType.array then
-      return self:getArray(obj, key)
+      return self:getArray(obj, key, scale)
 
    elseif ptype == luatex.pdfeObjType.dictionary then
-      return self:getDictionary(obj, key)
+      return self:getDictionary(obj, key, scale)
 
    elseif ptype == luatex.pdfeObjType.stream then
-      return self:getStream(obj, key)
+      return self:getStream(obj, key, scale)
 
    elseif ptype == luatex.pdfeObjType.reference then
-      return self:getReference(obj, key)
+      return self:getReference(obj, key, scale)
 
    else
       pkg.error('Not a valid pdfe type: ' .. ptype)
@@ -419,6 +449,16 @@ function Page:zero_based_indexing(obj, key)
    end
 end
 
+--- Returns a PDF reference.
+-- @number objnum object number
+-- @return String
+function Page:makeRef(objnum)
+   if objnum then
+      return string.format('%d 0 R', objnum)
+   else
+      return 'null'
+   end
+end
 
 
 --- User input
