@@ -24,7 +24,8 @@ tlmgr install \
       kvsetkeys \
       etoolbox \
       nodetree \
-      mwe
+      mwe \
+      pdfmanagement-testphase
 
 # no backups
 tlmgr option -- autobackup 0
