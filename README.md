@@ -15,20 +15,25 @@ average end user.
 Including `flare.sty` is all you need to do. By default Flare hooks
 into `\includegraphics` and copies all annotations. 
 
-    \documentclass{article}
-    \usepackage{flare}
-    \begin{document}
+```latex
+\documentclass{article}
+\usepackage{flare}
+\begin{document}
 
-    \includegraphics{file.pdf}
+\includegraphics{file.pdf}
 
-    \end{document}
+\end{document}
+```
 
 In addition to copying all annotations by default, Flare provides many options
 to customize the copying process, like modifying or removing certain annotations.
 Flare specific options shall be given in the optional argument of
 `\includegraphics`.
 
-    \includegraphics[<flare options>]{file.pdf}
+```latex
+\includegraphics[<flare options>]{file.pdf}
+```
+
 
 See [examples/](examples) for more advanced examples.
 
