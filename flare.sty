@@ -59,11 +59,13 @@
   \clist_put_right:Nn \l_FLR_kv_clist {{{ key = '#1', val = '#2' }}}
 }
 
+\cs_generate_variant:Nn \FLR_kv_two:nn { nx }
+
 \cs_new:Npn \FLR_setkeys:nn #1#2 {
   % perpare keyvals for Flare
   \clist_clear:N \l_FLR_kv_clist
   \keyval_parse:NNn \FLR_kv_one:nn \FLR_kv_two:nn { #1 }
-  \FLR_kv_two:nn { filename }{ #2 }
+  \FLR_kv_two:nx { filename }{ #2 }
 
   % prepare keyvals for Gin
   \clist_map_inline:nn { #1 }{
