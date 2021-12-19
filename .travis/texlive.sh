@@ -9,7 +9,7 @@ if ! command -v luatex >/dev/null 2>&1; then
     wget https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
     tar -xzf install-tl-unx.tar.gz
     cd install-tl-20*
-    ./install-tl --profile=../scripts/texlive.profile
+    ./install-tl --profile=../.travis/texlive.profile
     cd ..
 fi
 
