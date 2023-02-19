@@ -61,7 +61,7 @@ a TDS-packaged ZIP file, and unpack it in your TDS tree (aka TEXMF tree).
 
 
 ## Copyright
-© 2021 Andreas MATTHIAS
+© 2021-2023 Andreas MATTHIAS
 
 
 ## License
