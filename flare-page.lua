@@ -1,5 +1,5 @@
 --
--- Copyright 2021 Andreas MATTHIAS
+-- Copyright 2021-2023 Andreas MATTHIAS
 --
 -- This work may be distributed and/or modified under the
 -- conditions of the LaTeX Project Public License, either version 1.3c

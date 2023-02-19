@@ -1,5 +1,5 @@
 --
--- Copyright 2021 Andreas MATTHIAS
+-- Copyright 2021-2023 Andreas MATTHIAS
 --
 -- This work may be distributed and/or modified under the
 -- conditions of the LaTeX Project Public License, either version 1.3c
@@ -22,7 +22,7 @@ local Pkg = {}
 info = {
    name = 'Flare',
    version = '0.1',
-   date = '2021-03-15',
+   date = '2023-02-19',
    author = 'Andreas Matthias',
    license = 'The LaTeX Project Public License (LPPL), version 1.3c',
    description = 'Plugin for \\includegraphics copying PDF annotations.',
