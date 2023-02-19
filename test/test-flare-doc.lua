@@ -107,48 +107,51 @@ test('Doc:new()',
 end)
 
 
-test('Doc:newPicture()',
+test('Doc:addPdfPage()',
      function()
         local d = Doc:new()
-        assert.same(0, d.pictureCounter)
-        d:newPicture()
-        assert.same(1, d.pictureCounter)
-        d:newPicture()
-        assert.same(2, d.pictureCounter)
+        assert.same(0, #d.PdfPages)
+        d:addPdfPage({})
+        assert.same(1, #d.PdfPages)
+        d:addPdfPage({})
+        assert.same(2, #d.PdfPages)
 end)
 
 
 test('Doc:newPage()',
      function()
         local d = Doc:new()
-        assert.same(1, d.pageCounter)
-        d:newPage()
-        assert.same(2, d.pageCounter)
-        d:newPage()
-        assert.same(3, d.pageCounter)
+        assert.same(1, d.LaTeXPageCounter)
+        d:newLaTeXPage()
+        assert.same(2, d.LaTeXPageCounter)
+        d:newLaTeXPage()
+        assert.same(3, d.LaTeXPageCounter)
 end)
 
 
 test('Doc:writeToCache()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 3
+	d:addPdfPage() -- 1
+	d:addPdfPage() -- 2
+	d:addPdfPage() -- 3
+	local pc = 3
 
         -- check value
-        d:writeToCache('foo', 123)
-        assert.same(123, d.cacheNew[3]['foo'])
+        d:writeToCache(pc, 'foo', 123)
+        assert.same(123, d.cacheNew[pc]['foo'])
         assert.True(d.dirtyCache)
 
         -- check dirty cache false
         d.dirtyCache = false
         d.cacheOld = d.cacheNew
-        d:writeToCache('foo', 123)
-        assert.same(123, d.cacheNew[3]['foo'])
+        d:writeToCache(pc, 'foo', 123)
+        assert.same(123, d.cacheNew[pc]['foo'])
         assert.False(d.dirtyCache)
 
         -- check dirty cache true
-        d:writeToCache('foo', 456)
-        assert.same(456, d.cacheNew[3]['foo'])
+        d:writeToCache(pc, 'foo', 456)
+        assert.same(456, d.cacheNew[pc]['foo'])
         assert.True(d.dirtyCache)
 end)
 
@@ -156,18 +159,18 @@ end)
 test('Doc:readFromCache()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 3
-        d.cacheOld[3] = {}
-        d.cacheOld[3]['foo'] = 123
+	local pc = 3
+        d.cacheOld[pc] = {}
+        d.cacheOld[pc]['foo'] = 123
 
         assert.same(123,
-                        d:readFromCache('foo'))
+		    d:readFromCache(pc,'foo'))
         assert.same(nil,
-                        d:readFromCache('bar'))
+		    d:readFromCache(pc, 'bar'))
 
-        d.pictureCounter = 4
+	pc = 4
         assert.same(nil,
-                        d:readFromCache('foo'))
+		    d:readFromCache(pc,'foo'))
 end)
 
 
@@ -190,7 +193,8 @@ end)
 test('Doc:writeToCache_AnnotObj()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 2
+	d:addPdfPage({})
+	d:addPdfPage({})
         local annotId = 3
         d:writeToCache_AnnotObj(annotId, 'annot_obj_old', 33)
         assert.same(33, d.cacheNew[2]['annots'][3]['annot_obj_old'])
@@ -200,7 +204,8 @@ end)
 test('Doc:writeToCache_AnnotObjOld()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 2
+	d:addPdfPage({})
+	d:addPdfPage({})
         local annotId = 3
         d:writeToCache_AnnotObjOld(annotId, 33)
         assert.same(33, d.cacheNew[2]['annots'][3]['annot_obj_old'])
@@ -214,7 +219,8 @@ end)
 test('Doc:writeToCache_AnnotObjNew()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 2
+	d:addPdfPage({}) -- 1
+	d:addPdfPage({}) -- 2
         local annotId = 3
         d:writeToCache_AnnotObjNew(annotId, 33)
         assert.same(33, d.cacheNew[2]['annots'][3]['annot_obj_new'])
@@ -228,7 +234,6 @@ end)
 test('Doc:readFromCache_AnnotObj()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 2
         local annotId = 3
         d:writeToCache_AnnotObj(annotId, 'foo', 33)
         d.cacheOld = d.cacheNew
@@ -236,17 +241,17 @@ test('Doc:readFromCache_AnnotObj()',
 end)
 
 
-test('Doc:findFromCache_AnnotObjNew()',
+test('Doc:getFromCache_AnnotObjNew()',
      function()
         local d = Doc:new()
-        d.pictureCounter = 1
+	d:addPdfPage({})
         d:writeToCache_AnnotObj(1, 'annot_obj_old', 11)
         d:writeToCache_AnnotObj(1, 'annot_obj_new', 22)
         d:writeToCache_AnnotObj(2, 'annot_obj_old', 33)
         d:writeToCache_AnnotObj(2, 'annot_obj_new', 44)
         d.cacheOld = d.cacheNew
-        assert.same(22, d:findFromCache_AnnotObjNew(11))
-        assert.same(44, d:findFromCache_AnnotObjNew(33))
+        assert.same(22, d:getFromCache_AnnotObjNew(11))
+        assert.same(44, d:getFromCache_AnnotObjNew(33))
 end)
 
 

@@ -36,13 +36,13 @@ function Doc:new ()
    setmetatable(t, self)
    self.__index = self
 
-   self.pictureCounter = 0
-   self.pageCounter = 1
+   self.PdfPages = {}
+   self.LaTeXPageCounter = 1
 
    luatexbase.add_to_callback(
       'finish_pdfpage',
       function ()
-         self:newPage()
+         self:newLaTeXPage()
       end,
       'Flare callback')
    
@@ -54,14 +54,15 @@ function Doc:new ()
 end
 
 
---- Prepare for a new picture.
-function Doc:newPicture()
-   self.pictureCounter = self.pictureCounter + 1
+--- Add a new new PDF page.
+function Doc:addPdfPage(page)
+   self.PdfPages[#self.PdfPages + 1] = page
+   return #self.PdfPages
 end
 
---- Prepare for a new page.
-function Doc:newPage()
-   self.pageCounter = self.pageCounter + 1
+--- Prepare for a new LaTeX page.
+function Doc:newLaTeXPage()
+   self.LaTeXPageCounter = self.LaTeXPageCounter + 1
 end
 
 
@@ -128,11 +129,10 @@ end
 --- Writes data to the cache.
 -- @string key key
 -- @param val value
-function Doc:writeToCache(key, val)
-   if not self:areEqual(self:readFromCache(key), val) then
+function Doc:writeToCache(pc, key, val)
+   if not self:areEqual(self:readFromCache(pc, key), val) then
       self.dirtyCache = true
    end
-   local pc = self.pictureCounter
    local t = self.cacheNew
    t[pc] = t[pc] or {}
    t[pc][key] = val
@@ -142,14 +142,18 @@ end
 --- Returns data from the cache.
 -- @string key key
 -- @return Value
-function Doc:readFromCache(key)
-   local pc = self.pictureCounter
+function Doc:readFromCache(pc, key)
    local t = self.cacheOld
    if t[pc] then
       return t[pc][key]
    else
       return nil
    end
+end
+
+
+function Doc:cacheData(page)
+   self.PdfPages[page]:cacheData()
 end
 
 
@@ -194,7 +198,7 @@ end
 -- @string key key
 -- @number objnum object number
 function Doc:writeToCache_AnnotObj(annotId, key, objnum)
-   local pc = self.pictureCounter
+   local pc = #self.PdfPages
    local t = self.cacheNew
    t[pc] = t[pc] or {}
    t[pc]['annots'] = t[pc]['annots'] or {}
@@ -208,7 +212,7 @@ end
 -- @string key key
 -- @return Object number
 function Doc:readFromCache_AnnotObj(annotId, key)
-   local pc = self.pictureCounter
+   local pc = #self.PdfPages
    local t = self.cacheOld
    if t[pc] and
       t[pc]['annots'] and
@@ -224,7 +228,7 @@ end
 -- existing (old) PDF file. 
 -- @number annot_obj_old old annotation object number
 -- @return New annotation object number
-function Doc:findFromCache_AnnotObjNew(annot_obj_old)
+function Doc:getFromCache_AnnotObjNew(annot_obj_old)
    for _, pic in ipairs(self.cacheOld) do
       if pic['annots'] then
          for _, annot in ipairs(pic['annots']) do

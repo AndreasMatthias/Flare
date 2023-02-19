@@ -98,9 +98,7 @@
     page:openFile()
     page:copyAnnots()
     page:copyDests()
-  }
-  \latelua{
-    page:cacheData()
+    tex.print("\string\\latelua{doc:cacheData(" .. page.pictureId ..")}")
   }
 }
 

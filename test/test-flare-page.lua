@@ -10,7 +10,7 @@
 -- version 2008 or later.
 --
 -- This work has the LPPL maintenance status `maintained'.
--- 
+--
 -- The Current Maintainer of this work is Andreas MATTHIAS.
 --
 
@@ -42,16 +42,17 @@ test('Page:new()',
      function()
         local d = Doc:new()
         local p = Page:new(d)
-        assert.equal(d, p.doc)
+
+	assert.equal(d, p.doc)
         assert.same({}, p.GinKV)
         assert.same({}, p.FlareKV)
-        assert.same(1, d.pictureCounter)
+        assert.same(1, #d.PdfPages)
         assert.same({a=1, b=0, c=0, d=1, e=0, f=0}, p.ctm)
         local p = Page:new(d)
-        assert.same(2, d.pictureCounter)
+        assert.same(2, #d.PdfPages)
 end)
 
-            
+
 test('Page:openFile()',
      function()
         local p = Page:new(Doc:new())
@@ -177,19 +178,22 @@ end)
 test('Page:writeToCache()',
      function()
         local d = Doc:new()
-        local p = Page:new(d)
-        d.pictureCounter = 3
-        
-        p:writeToCache('foo', 123)
+        local p
+	p = Page:new(d) -- page 1
+	p = Page:new(d) -- page 2
+	p = Page:new(d) -- page 3
+	local pc = 3
+
+	p:writeToCache('foo', 123)
         assert.same(123,
-                        d.cacheNew[3]['foo'])
+		    d.cacheNew[pc]['foo'])
         assert.True(d.dirtyCache)
 
         d.dirtyCache = false
         d.cacheOld = d.cacheNew
         p:writeToCache('foo', 123)
         assert.same(123,
-                        d.cacheNew[3]['foo'])
+		    d.cacheNew[pc]['foo'])
         assert.False(d.dirtyCache)
 end)
 
@@ -197,19 +201,18 @@ end)
 test('Page:readFromCache()',
      function()
         local d = Doc:new()
-        local p = Page:new(d)
-        d.pictureCounter = 3
-        d.cacheOld[3] = {}
-        d.cacheOld[3]['foo'] = 123
+        local p
+	p = Page:new(d) -- page 1
+	p = Page:new(d) -- page 2
+	p = Page:new(d) -- page 3
+	local pc = 3
+        d.cacheOld[pc] = {}
+        d.cacheOld[pc]['foo'] = 123
 
         assert.same(123,
-                        p:readFromCache('foo'))
+		    p:readFromCache('foo'))
         assert.same(nil,
-                        p:readFromCache('bar'))
-
-        d.pictureCounter = 4
-        assert.same(nil,
-                        p:readFromCache('foo'))
+		    p:readFromCache('bar'))
 end)
 
 
@@ -233,8 +236,9 @@ end)
 test('Page:writeToCache_AnnotObjOld()',
      function()
         local d = Doc:new()
-        local p = Page:new(d)
-        d.pictureCounter = 2
+        local p
+	p = Page:new(d) -- page 1
+	p = Page:new(d) -- page 2
         p.annotId = 3
         p:writeToCache_AnnotObjOld(33)
         assert.same(33, d.cacheNew[2]['annots'][3]['annot_obj_old'])
@@ -248,8 +252,9 @@ end)
 test('Page:writeToCache_AnnotObjNew()',
      function()
         local d = Doc:new()
-        local p = Page:new(d)
-        d.pictureCounter = 2
+        local p
+	p = Page:new(d) -- page 1
+	p = Page:new(d) -- page 2
         p.annotId = 3
         p:writeToCache_AnnotObjNew(33)
         assert.same(33, d.cacheNew[2]['annots'][3]['annot_obj_new'])
@@ -260,11 +265,10 @@ test('Page:writeToCache_AnnotObjNew()',
 end)
 
 
-test('Page:findFromCache_AnnotObjNew()',
+test('Page:getFromCache_AnnotObjNew()',
      function()
         local d = Doc:new()
         local p = Page:new(d)
-        d.pictureCounter = 1
         p.annotId = 1
         p:writeToCache_AnnotObjOld(11)
         p:writeToCache_AnnotObjNew(22)
@@ -272,8 +276,8 @@ test('Page:findFromCache_AnnotObjNew()',
         p:writeToCache_AnnotObjOld(33)
         p:writeToCache_AnnotObjNew(44)
         d.cacheOld = d.cacheNew
-        assert.same(22, p:findFromCache_AnnotObjNew(11))
-        assert.same(44, p:findFromCache_AnnotObjNew(33))
+        assert.same(22, p:getFromCache_AnnotObjNew(11))
+        assert.same(44, p:getFromCache_AnnotObjNew(33))
 end)
 
 

@@ -251,7 +251,7 @@ function Page:formatIRT(annot, objnum)
       pkg.bugs()
       return nil
    end
-   local annot_obj_new = self:findFromCache_AnnotObjNew(objnum)
+   local annot_obj_new = self:getFromCache_AnnotObjNew(objnum)
    if annot_obj_new == nil then
       return nil
    else

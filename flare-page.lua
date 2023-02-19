@@ -53,16 +53,14 @@ function Page:new (doc)
    setmetatable(t, self)
    self.__index = self
 
-   self.doc = doc
-   self.doc:newPicture()
+   t.doc = doc
+   t.pictureId = doc:addPdfPage(t)
+   t.page = t.doc.LaTeXPageCounter
 
-   self.page = self.doc.pageCounter
-
-   self.GinKV = {}
-   self.FlareKV = {}
-   self.IdentityCTM = self:makeCTM(1, 0, 0, 1, 0, 0)
-   self.ctm = self.IdentityCTM
-   
+   t.GinKV = {}
+   t.FlareKV = {}
+   t.IdentityCTM = self:makeCTM(1, 0, 0, 1, 0, 0)
+   t.ctm = t.IdentityCTM
 
    return t
 end
@@ -268,7 +266,7 @@ end
 -- @string key key
 -- @param val value
 function Page:writeToCache(key, val)
-   self.doc:writeToCache(key, val)
+   self.doc:writeToCache(self.pictureId, key, val)
 end
 
 
@@ -276,7 +274,7 @@ end
 -- @string key key
 -- @return Value
 function Page:readFromCache(key)
-   return self.doc:readFromCache(key)
+   return self.doc:readFromCache(self.pictureId, key)
 end
 
 
@@ -310,8 +308,8 @@ end
 -- of the existing (old) PDF file.
 -- @number annot_obj_old old annotation object number
 -- @return New annotation object number
-function Page:findFromCache_AnnotObjNew(annot_obj_old)
-   return self.doc:findFromCache_AnnotObjNew(annot_obj_old)
+function Page:getFromCache_AnnotObjNew(annot_obj_old)
+   return self.doc:getFromCache_AnnotObjNew(annot_obj_old)
 end
 
 
