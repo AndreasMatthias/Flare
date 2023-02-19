@@ -127,6 +127,7 @@ end
 
 
 --- Writes data to the cache.
+-- @number pc page counter
 -- @string key key
 -- @param val value
 function Doc:writeToCache(pc, key, val)
@@ -140,6 +141,7 @@ end
 
 
 --- Returns data from the cache.
+-- @number pc page counter
 -- @string key key
 -- @return Value
 function Doc:readFromCache(pc, key)
